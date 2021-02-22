@@ -6,7 +6,7 @@ library(plumber)
 
 # getSetRelation(n)
 # returns a relation on n sets in the form "AB~C" or "BC"
-getSetRelation <- function(n) {
+getSetRelation <- function(n=2) {
   #creates a vector of size n containing random numbers between 0 and 3
   #     entries starting with "0" are flagged as "active"
   #     entries starting with "1" are flagged as "intersect active"
@@ -15,6 +15,11 @@ getSetRelation <- function(n) {
   # [0.223, 2.314, 1.0001].  The resulting relation would be, "A~C"
   
   randVect = (runif(n, min=0, max = 3.9))
+  
+  
+  
+  
+  
   
   #TODO: remove. For debugging only.
   print(randVect)
@@ -53,6 +58,14 @@ getSetRelation <- function(n) {
     }
     
   }
+  
+  #occasionally all values would be over 3, resulting in an empty relationship. 
+  #this just assigns "A" to the vector if it's empty.
+  if(is.null(relationVec)){
+    relationVec[1] <- "A"
+  }
+  
+  
   relationStr = ""
   for(val in relationVec) {
     relationStr <- paste0(relationStr, val)
@@ -97,10 +110,11 @@ middleWare <- function(solution) {
   
     
 }
-
+ 
 #getSetProblem() returns a json object containing a base64 encoded png
 #of a set relation and a string with the correct set relation definition.
-
+#* @param n number of sets in the diagram
+##* @get  /getSetProblem
 getSetProblem <- function() {
   solution <-getSetRelation(2)
 
@@ -122,9 +136,11 @@ getSetProblem <- function() {
 }
 
 
-
 getSetProblem()
 
 
-
+#* @get /oneRemoved
+oneRemoved <- function() {
+  return(getSetProblem())
+}
 

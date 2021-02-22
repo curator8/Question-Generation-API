@@ -3,10 +3,9 @@ library(plumber)
 
 
 
-#* @get /getAVenn
 getAVenn <- function() {
 
-  venn("~B", snames = "A, B",sncs = 4)  #this is the line that actually draws the plot in the buffer. 
+  venn("111",sncs = 4, ilabels= TRUE)  #this is the line that actually draws the plot in the buffer. 
 
   
 }
