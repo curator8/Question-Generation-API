@@ -20,6 +20,4 @@ getEmptyVenn <- function(n) {
 }
 
 
-
-
-print(getEmptyVenn(3))
+venn("A~BC")

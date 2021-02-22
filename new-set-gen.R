@@ -1,4 +1,7 @@
 library(venn)
+library(base64enc)
+library(jsonlite)
+library(plumber)
 
 
 # getSetRelation(n)
@@ -23,7 +26,8 @@ getSetRelation <- function(n) {
   count = 1 #Used to keep track of what set is being considered. 1 = A, 2 = B, etc.
   for (val in randVect) {
     if(val >= 0 && val < 1) {
-      
+  
+          
       val <- paste0("+", LETTERS[count])
       relationVec <- c(relationVec, val)
       count = count + 1
@@ -80,10 +84,46 @@ cleanRelationStr <- function(rel) {
 }
 
 
-v <- getSetRelation(2)
+#encodeDiagram(diag) converts a png of a set diagram to base64 and preps it for display in web browsers.
+# @params diag    path to the diagram png
+encodeDiagram <- function(diag) {
+  encVec <-base64encode(diag)
+  encVec <- paste0("data:image/png;base64,", encVec)
+  
+  return(encVec)
+}
+
+middleWare <- function(solution) {
+  
+    
+}
+
+#getSetProblem() returns a json object containing a base64 encoded png
+#of a set relation and a string with the correct set relation definition.
+
+getSetProblem <- function() {
+  solution <-getSetRelation(2)
+
+  #for conversion to base64, the png of the plot must be written to disk. (as far as I can tell)
+  png(file="set_diag_tmp.png")
+  venn(solution, snames = "A, B",sncs = 4)  #this is the line that actually draws the plot in the buffer. 
+  dev.off()  #saves the above plot to disk
+
+  encodedDiag <- encodeDiagram("set_diag_tmp.png")
+  transData <- data.frame(solution, encodedDiag)
+  json <- toJSON(transData, pretty=TRUE)
+  
+  
+  print(json) #TODO: remove. for debugging only. 
+  
+  return(json)
+  
+  
+}
 
 
-venn(v, snames = "A, B")
+
+getSetProblem()
 
 
 
