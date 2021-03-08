@@ -11,3 +11,7 @@
     margin-bottom: 10px;
     background-color: #dddddd;
 }
+
+ul {
+    list-style-type: none; /*removes bullets */
+}
