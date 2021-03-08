@@ -86,10 +86,8 @@
 
         <script type="text/javascript">
 
-        
-            var setUnionBtn = document.querySelector("#set-union");
-            setUnionBtn.addEventListener("click", function(){
-                fetch('http://localhost:3157/getSetUnion')
+            function getSUProblem() {
+              fetch('http://localhost:3157/getSetUnion')
                     .then((response) => {
                         return response.json()
                     })
@@ -124,13 +122,21 @@
                     .catch((err) => {
                         console.log(err)
                     })
+            }
+        
+            var setUnionBtn = document.querySelector("#set-union");
+            var submitBtn = document.querySelector("#submitQuiz");
+
+            //retrieves a problem on click. 
+            setUnionBtn.addEventListener("click", function(){
+                getSUProblem();
             })
 
-            var submitBtn = document.querySelector("#submitQuiz");
 
             submitBtn.addEventListener("click", function(){
               if(document.getElementById("a1").checked) {
                 window.alert("you got it right!")
+                getSUProblem();
               }
               else {
                 window.alert("Incorrect. Try again.")
