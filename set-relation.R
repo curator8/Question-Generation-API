@@ -2,12 +2,19 @@
 # File:           set-Relation.R
 
 library(plumber)
+library(jsonlite)
 
 #The purpose of this file is provide an API from which
 # a web browser may request a problem to solve regarding
 # set operations. 
 
+#The following is pretty unsafe and is only planned to be used during early development. 
 
+#* @filter cors
+cors <- function(res) {
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  plumber::forward()
+}
 
 # getSetUnion(n) generates and prepares n sets
 # of size m as well as 3 false "answers" and 1 
@@ -20,12 +27,16 @@ library(plumber)
 #               answers.
 #* @get  /getSetUnion
 getSetUnion <- function(n=2, m=5) {
-  numEntries <- 2*5 
   wrongs <- list() #creates an empty list of wrong answers
   iWrongs <- 1     #index of wrong answer list.
   
+  if(is.null(m) && is.null(n)){
+    numEntries <- n*m 
+  } else {
+    numEntries = 10
+  }
   #creates a single vector. Ints ranging 1 to 20. 20 ints in the vector.
-  intVec <- sample(1:20, numEntries, replace=T)
+  #intVec <- sample(1:20, numEntries, replace=T)
   
   sets <- list()    #creating an empty list. Elements will be sets 
   
@@ -54,28 +65,41 @@ getSetUnion <- function(n=2, m=5) {
   # can be provided as an incorrect answer.
   if(length(dupeSets) != length(answer)) { 
     #add dupeSets to the list of incorrect answers
-    wrongs[[iWrongs]] <- dupeSets
+    wrongs[[iWrongs]] <- sort(dupeSets, decreasing = FALSE)
     iWrongs <- iWrongs + 1
     
   }
   
   for(e in (iWrongs:3)) {
-    wrongs[[iWrongs]] <- (sample(1:20, (5 *2), replace = T))
+    wrongs[[iWrongs]] <- sort((sample(1:20, (numEntries), replace = T)), decreasing = FALSE)
     iWrongs <- iWrongs + 1
   }
     
   for (e in wrongs) {
-    print("check")
-    print(e)
+    print(sort(e, decreasing = FALSE))
   }
   
-  return(answer)
+  
+  
+  #format answers and sources into json and send to client. 
+  #TODO: include sets (source), "answer", and "wrongs"
+  
+  toSend <- list(source= sets, answer= answer, wrongs= wrongs)
+  
+  print(toSend)
+  
+  jsonToSend <- toJSON(toSend)
+  
+  
+  return(jsonToSend)
   
 }
 
 
 
 
-
-
-getSetUnion(2, 5)
+#* @get /echo
+repeatAfterMe <- function(s = "holla back girl"){
+  return(s)
+  
+}

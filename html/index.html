@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Question Gen Playground</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="main.css">
+        
+
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        
+        <h1>Question Generation Playground</h1>
+
+        <h3>Set Union Problem</h3>
+        <p>When the button is clicked, results from the API will be printed to the console.</p>
+        <button type="button" class="btn btn-primary" id="set-union">Get Set Union Problem</button>
+        
+        <br>
+        <br>
+        <!-- This section describes the multiple choice question implementation-->
+        <div id="quiz" class="border">
+            <p>What is the union of the following sets? </p>
+            <div id="sets">
+              
+            </div>
+            <ul class = "answers-list">
+              <li>
+                <div class="form-check">
+                  <input class="form-check-input rad" type="radio" name="answer" id="a1">
+                  <label class="form-check-label" for="answer1" id="answer1">
+                    answer1
+                  </label>
+                </div>
+              </li>  
+              <li>
+                <div class="form-check">
+                  <input class="form-check-input rad" type="radio" name="answer">
+                  <label class="form-check-label" for="answer2" id="answer2">
+                    answer2
+                  </label>
+                </div>
+              </li>
+              <li>
+                <div class="form-check">
+                  <input class="form-check-input rad" type="radio" name="answer" >
+                  <label class="form-check-label" for="answer3" id="answer3">
+                    answer3
+                  </label>
+                </div>
+              </li>
+              <li>
+                <div class="form-check">
+                  <input class="form-check-input rad" type="radio" name="answer" >
+                  <label class="form-check-label" for="answer4" id="answer4">
+                    answer4
+                  </label>
+                </div>
+              </li>
+            </ul>
+            
+              
+              
+              
+              <button type="button" class="btn btn-primary" id="submitQuiz">Submit</button>
+        </div>
+
+        
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+
+        
+            var setUnionBtn = document.querySelector("#set-union");
+            setUnionBtn.addEventListener("click", function(){
+                fetch('http://localhost:3157/getSetUnion')
+                    .then((response) => {
+                        return response.json()
+                    })
+                    .then((data) => {
+                      //Here is where all the data manipulation goes.
+                      var questionInfo = JSON.parse(data);
+                      console.log(questionInfo);
+
+                      //This section shuffles the answers 
+                      //While this is effective in varying the answer's position, the correct
+                      //answer is always "answer1", no matter what position it's in.
+                      var ul = document.querySelector('ul');
+                      for (var i = ul.children.length; i >= 0; i--) {
+                      ul.appendChild(ul.children[Math.random() * i | 0]);
+                      }
+
+                      //assigning json info to js variables
+                      var answer = questionInfo.answer;
+                      var wrongs = questionInfo.wrongs;
+                      var source = questionInfo.source;
+
+                      //Display's the "question"
+                      document.getElementById("sets").innerHTML = JSON.stringify(source);
+
+                      //Changes the html content of the "answer" to one of the answers.
+                      document.getElementById("answer1").innerHTML = JSON.stringify(answer);
+                      document.getElementById("answer2").innerHTML = JSON.stringify(wrongs[0]);
+                      document.getElementById("answer3").innerHTML = JSON.stringify(wrongs[1]);
+                      document.getElementById("answer4").innerHTML = JSON.stringify(wrongs[2]);
+
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+            })
+
+            var submitBtn = document.querySelector("#submitQuiz");
+
+            submitBtn.addEventListener("click", function(){
+              if(document.getElementById("a1").checked) {
+                window.alert("you got it right!")
+              }
+              else {
+                window.alert("Incorrect. Try again.")
+              }
+            })
+
+
+        
+        
+        
+        </script>
+    </body>
+</html>
