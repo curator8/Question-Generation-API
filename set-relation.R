@@ -4,12 +4,17 @@
 library(plumber)
 library(jsonlite)
 
+
+options_plumber(
+  port = 3157
+)
 #The purpose of this file is provide an API from which
 # a web browser may request a problem to solve regarding
 # set operations. 
 
-#The following is pretty unsafe and is only planned to be used during early development. 
 
+#The following is pretty unsafe and is only planned to be used during early development. 
+#It allows for Cross Origin Resource Sharing from any client. 
 #* @filter cors
 cors <- function(res) {
   res$setHeader("Access-Control-Allow-Origin", "*")
@@ -70,26 +75,23 @@ getSetUnion <- function(n=2, m=5) {
     
   }
   
+  #sorts and adds wrong answers to wrongs list.
   for(e in (iWrongs:3)) {
     wrongs[[iWrongs]] <- sort((sample(1:20, (numEntries), replace = T)), decreasing = FALSE)
     iWrongs <- iWrongs + 1
   }
-    
+  
+  #TODO: remove. for debugging  
   for (e in wrongs) {
     print(sort(e, decreasing = FALSE))
   }
   
   
   
-  #format answers and sources into json and send to client. 
-  #TODO: include sets (source), "answer", and "wrongs"
-  
+  #format answers and sources into json and return results 
   toSend <- list(source= sets, answer= answer, wrongs= wrongs)
   
-  print(toSend)
-  
   jsonToSend <- toJSON(toSend)
-  
   
   return(jsonToSend)
   
@@ -98,8 +100,3 @@ getSetUnion <- function(n=2, m=5) {
 
 
 
-#* @get /echo
-repeatAfterMe <- function(s = "holla back girl"){
-  return(s)
-  
-}
