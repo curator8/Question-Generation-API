@@ -106,15 +106,11 @@ encodeDiagram <- function(diag) {
   return(encVec)
 }
 
-middleWare <- function(solution) {
-  
-    
-}
- 
 #getSetProblem() returns a json object containing a base64 encoded png
 #of a set relation and a string with the correct set relation definition.
 #* @param n number of sets in the diagram
-##* @get  /getSetProblem
+#* @response serializer pngssin
+#* @get  /getSetProblem
 getSetProblem <- function() {
   solution <-getSetRelation(2)
 
