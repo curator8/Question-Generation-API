@@ -87,7 +87,7 @@ getSetUnion <- function(n=2, m=5) {
     print(sort(e, decreasing = FALSE))
   }
   
-  
+  sets <- c("Select the correct union of the following sets", sets)
   
   #format answers and sources into json and return results 
   toSend <- list(source= sets, answer= answer, wrongs= wrongs)
@@ -171,6 +171,9 @@ getSetIntersect <- function(n=2, m=5) {
   wrongs[[2]] <- d2
   wrongs[[3]] <- d3
  
+  questionStr <- "Select the correct intersection of the following sets"
+  
+  sourceSets <- c(questionStr, sourceSets)
   
   #format answers and sources into json and return results 
   toSend <- list(source= sourceSets, answer= answer, wrongs= wrongs)
