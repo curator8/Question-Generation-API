@@ -3,7 +3,7 @@
 
 library(plumber)
 library(jsonlite)
-library(set)
+
 
 
 #TODO: 3/15/21 clean up redundant code. need a makeSets(n,m) function instead of 
