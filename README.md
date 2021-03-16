@@ -3,8 +3,14 @@ Set Operations API
 
 <h2>API functionallity</h2>
 
-Currently implemented API functions are found within the `set-relation.R` file. Other files are for testing or documentation purposes and should not be used as an API. 
+Currently implemented API functions are found within the `set-relation.R` file. Other files are for testing or documentation purposes and should not be used as an API. The following are the currently implemented endpoints:
+  <ul>
+  <li>/getSetUnion</li>
+  <li>/getSetIntersection</li>
+  </ul>
 
+
+  <h5>Endpoints in Detail</h5>
 
   <h4>/getSetUnion(m,n) </h4>
   <p> @param   n     The number of sets to be joined. Default value = 2 </p>
