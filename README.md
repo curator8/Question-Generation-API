@@ -7,7 +7,7 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   <ul>
   <li>/getSetUnion</li>
   <li>/getSetIntersect</li>
-  <li>/getSetDiff</li>
+  <li>/getAsymDiff</li>
   </ul>
 
 
@@ -57,7 +57,7 @@ Currently implemented API functions are found within the `set-relation.R` file. 
               `[5,7,9,2]]`<br>
   `}`
 
-<h4>/getSetDiff(m,n) </h4>
+<h4>/getAsymDiff(m,n) </h4>
   <p> @param   n     The number of sets to be considered. Default value = 2 </p>
   <p> @param   m     The number of elements in each set. Default value = 5 </p>
   <p> @returns       A Set Difference multiple choice problem in the form of a JSON Object. The returned JSON object adheres to the following structure: </p>
