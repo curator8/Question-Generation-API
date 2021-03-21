@@ -186,7 +186,7 @@ getSetIntersect <- function(n=2, m=5) {
 
 
 
-# getSetDiff(n, m) genereates and prepares n sets
+# getAsymDiff(n, m) genereates and prepares n sets
 # of m integers, 3 "distractors" and 1 correct answer
 # when considering the difference of the generated
 # sets.
@@ -199,8 +199,8 @@ getSetIntersect <- function(n=2, m=5) {
 #* @response json  A json object containing the
 #               sets, correct, and incorrect
 #               answers.
-#* @get /getSetDiff
-getSetDiff <- function(n=2, m=5) {
+#* @get /getAsymDiff
+getAsymDiff <- function(n=2, m=5) {
   
   n <-2   #currently, the api only supports 2 sets. 
   
