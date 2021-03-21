@@ -136,9 +136,6 @@ getSetIntersect <- function(n=2, m=5) {
   answer <- intersect(sourceSets[[1]], sourceSets[[2]])
   answer <- answer[order(answer, decreasing = FALSE)]
   
- # print("Answer")
-  #print(answer)
-  
   
   #Distractors
  
@@ -216,8 +213,52 @@ getSetDiff <- function(n=2, m=5) {
   allElements <- vector()
   
   for(e in sourceSets) {
+    print(e)
     allElements <- c(allElements, e)
   }
   
+  answer <- not(sourceSets[[1]], sourceSets[[2]])
+  
+  
+  # Distractor 1 (d1) is the difference of A-B and the difference B-A
+  d1 <- c(answer, not(sourceSets[[2]], sourceSets[[1]]))
+  d1 <- sort(d1, decreasing = FALSE)
+  
+  # Distractor 2 (d2) is the difference B-A (the correct is A-B)
+  d2 <- not(sourceSets[[2]], sourceSets[[1]])
+  d2 <- sort(d2, decreasing = FALSE)
+  
+  # Distractor 3 (d3) is the intersection of sets A and B
+  d3 <- intersect(sourceSets[[1]], sourceSets[[2]])
+  
+  
+  wrongs <- list()
+  wrongs[[1]] <- d1
+  wrongs[[2]] <- d2
+  wrongs[[3]] <- d3
+  
+  
+  # in the case that the source sets match, distractor answers would be empty as well as the correct answer.
+  # this just fills those empty answers with randomly generated sets. 
+  
+  #TODO: 3/21/21 TJS. It's not very elegant. Maybe we offer
+  # only 2 answer choices in this case. Front end would need to handle display issues though. 
+  for(e in wrongs) {
+    if(e == "[]"){
+      e <- sample(1:9, m, replace = F)
+    }
+  }
+  
+  
+  questionStr <- "Select the correct set difference A-B where the first set is A and the second is B"
+  
+  sourceSets <- c(questionStr, sourceSets)
+  
+  #format answers and sources into json and return results 
+  toSend <- list(source= sourceSets, answer= answer, wrongs= wrongs)
+  
+  jsonToSend <- toJSON(toSend)
+  
+  return(jsonToSend)
   
 }
