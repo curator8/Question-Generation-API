@@ -3,6 +3,7 @@
 
 library(plumber)
 library(jsonlite)
+library(set)
 
 
 
@@ -208,7 +209,7 @@ getSetDiff <- function(n=2, m=5) {
   
   sourceSets <- list()    #creating an empty list. Elements will be sets 
   
-  #for each in a given number of sets, fill the set with ints (1:10)
+  #for each in a given number of sets, fill the set with ints (1:9)
   for(e in (1:n)) {
     sourceSets[[e]] <- sample(1:9, m, replace = F)
   }
