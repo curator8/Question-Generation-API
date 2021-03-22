@@ -257,7 +257,7 @@ getAsymDiff <- function(n=2, m=5) {
   #format answers and sources into json and return results 
   toSend <- list(source= sourceSets, answer= answer, wrongs= wrongs)
   
-  jsonToSend <- toJSON(toSend)
+  jsonToSend <- toJSON(toSend, pretty = TRUE)
   
   return(jsonToSend)
   
