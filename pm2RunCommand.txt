@@ -1,0 +1,5 @@
+#This command will start the API server 
+
+pm2 start --interpreter="Rscript" /var/www/html/question_generation/Set-Operations-api/run-API.R 
+
+
