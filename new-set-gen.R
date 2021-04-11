@@ -16,13 +16,8 @@ getSetRelation <- function(n=2) {
   
   randVect = (runif(n, min=0, max = 3.9))
   
+ 
   
-  
-  
-  
-  
-  #TODO: remove. For debugging only.
-  print(randVect)
   
   #an empty vector. will hold set names and operators
   relationVec <- c()
@@ -70,11 +65,10 @@ getSetRelation <- function(n=2) {
   for(val in relationVec) {
     relationStr <- paste0(relationStr, val)
   }
-  print("Pre-cleaning")
-  print(relationStr)
+ 
+  #cleaning the string up to prevent nonsense relations
   relationStr <- cleanRelationStr(relationStr)
-  print("post cleaning")
-  print(relationStr)
+  
   return(relationStr)
 }
 
@@ -86,8 +80,6 @@ getSetRelation <- function(n=2) {
 # NOTE: a leading "*" or "+" is result of the randomizer in getSetRelation
 cleanRelationStr <- function(rel) {
   if(substr(rel,1,1) == "*" || substr(rel,1,1) == "+") {
-    print("ping!")
-    
     return(sub('.', '', rel))
   
     } else
@@ -111,32 +103,69 @@ encodeDiagram <- function(diag) {
 #* @param n number of sets in the diagram
 #* @response serializer pngssin
 #* @get  /getSetProblem
-getSetProblem <- function() {
+getSetProblem <- function(n=2) {
   solution <-getSetRelation(2)
-
+  print("called function")
   #for conversion to base64, the png of the plot must be written to disk. (as far as I can tell)
   png(file="set_diag_tmp.png")
   venn(solution, snames = "A, B",sncs = 4)  #this is the line that actually draws the plot in the buffer. 
   dev.off()  #saves the above plot to disk
 
   encodedDiag <- encodeDiagram("set_diag_tmp.png")
-  transData <- data.frame(solution, encodedDiag)
-  json <- toJSON(transData, pretty=TRUE)
+  pngData <- data.frame(solution, encodedDiag)
   
   
-  print(json) #TODO: remove. for debugging only. 
+  #distractor Generation
+  wrongs <- list()
+  wrongs[[1]] <- getSetRelation()
+  wrongs[[2]] <- getSetRelation()
+  wrongs[[3]] <- getSetRelation()
+
+  #replacing any generated distractors that match the correct solution
+  i <- 1
+  for(e in wrongs){
+    
+    while(e == solution){
+      wrongs[[i]] <- getSetRelation()
+      e <- wrongs[[i]]
+    }
+    i <- i + 1 #incrementing counter for indexing list
+  }
   
-  return(json)
   
+  #replacing any generated distractors that match another distractor
+  
+  #DEV-NOTE: 3/21/21 TJS. This may be the most lazy code I've ever written, but from what I read about Loops in R, 
+  # it may actually be more memory efficient than for loops.
+  while(wrongs[[1]] ==wrongs[[2]] || wrongs[[2]] == wrongs[[3]] || wrongs[[1]]==wrongs[[3]]){
+    if(wrongs[[1]] == wrongs[[2]]){
+      while(wrongs[[1]] == wrongs[[2]]){
+        wrongs[[2]] <= getSetRelation()
+      }
+    }
+    
+    if(wrongs[[2]] == wrongs[[3]]){
+      while(wrongs[[2]] == wrongs[[3]]){
+        wrongs[[3]] <= getSetRelation()
+      }
+    }
+    
+    if(wrongs[[1]] == wrongs[[3]]){
+      while(wrongs[[1]] == wrongs[[3]]){
+        wrongs[[3]] <= getSetRelation()
+      }
+    }
+  }
+  
+  toSend <- list(source= pngData, answer= solution, wrongs= wrongs)
+  
+  jsonToSend <- toJSON(toSend, pretty = TRUE)
+  
+  
+  
+  return(jsonToSend)
   
 }
 
 
-getSetProblem()
-
-
-#* @get /oneRemoved
-oneRemoved <- function() {
-  return(getSetProblem())
-}
 
