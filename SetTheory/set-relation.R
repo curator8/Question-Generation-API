@@ -5,6 +5,8 @@ library(plumber)
 library(jsonlite)
 library(set)
 
+source("SetTheory/utils.R")
+
 
 
 #TODO: 3/15/21 clean up redundant code. need a makeSets(n,m) function instead of 
@@ -26,7 +28,7 @@ cors <- function(res) {
   plumber::forward()
 }
 
-# getSetUnion(n) generates and prepares n sets
+# getSetUnionMC(n) generates and prepares n sets
 # of size m as well as 3 false "answers" and 1 
 # correct "answer" when considering the union of
 # said sets. 
@@ -35,8 +37,8 @@ cors <- function(res) {
 # @return json  A json object containing the
 #               sets, correct, and incorrect
 #               answers.
-#* @get  /getSetUnion
-getSetUnion <- function(n=2, m=5) {
+#* @get  /getSetUnionMC
+getSetUnionMC <- function(n=2, m=5) {
   wrongs <- list() #creates an empty list of wrong answers
   iWrongs <- 1     #index of wrong answer list.
   
@@ -58,6 +60,14 @@ getSetUnion <- function(n=2, m=5) {
   answer <- union(sets[[1]], sets[[2]])
   answer <- answer[order(answer)]
 
+  #formats answer as a string
+  #answer <- paste(c(answer), collapse=', ')
+  
+  #adds mathjax formatting to string
+  #NOTE: doesn't format correctly. R's fault. 
+  answer <- formatListAsSet(answer)
+
+
   
   #The following decides if there was a duplicate in the original sets.
   # If so, it provides the union with duplicates to be used as an incorrect
@@ -72,30 +82,40 @@ getSetUnion <- function(n=2, m=5) {
   # can be provided as an incorrect answer.
   if(length(dupeSets) != length(answer)) { 
     #add dupeSets to the list of incorrect answers
-    wrongs[[iWrongs]] <- sort(dupeSets, decreasing = FALSE)
+    current <- sort(dupeSets, decreasing = FALSE)
+    wrongs[[iWrongs]] <- formatListAsSet(current)
     iWrongs <- iWrongs + 1
     
   }
   
   #sorts and adds wrong answers to wrongs list.
   for(e in (iWrongs:3)) {
-    wrongs[[iWrongs]] <- sort((sample(1:20, (numEntries), replace = T)), decreasing = FALSE)
+    current <- sort((sample(1:20, (numEntries), replace = T)), decreasing = FALSE)
+    wrongs[[iWrongs]] <- formatListAsSet(current)
     iWrongs <- iWrongs + 1
   }
   
   #TODO: remove. for debugging  
-  for (e in wrongs) {
-    print(sort(e, decreasing = FALSE))
-  }
+  #for (e in wrongs) {
+  #  print(sort(e, decreasing = FALSE))
+  #}
   
+ 
+  counter <- 1
+  for(s in sets){
+    current <- formatListAsSet(s)
+    sets[counter] <- current
+    counter <- counter + 1
+  }
+
   sets <- c("Select the correct union of the following sets", sets)
   
   #format answers and sources into json and return results 
-  toSend <- list(source= sets, answer= answer, wrongs= wrongs)
+  toSend <- list(content= sets, correct= answer, distractors= wrongs)
   
-  jsonToSend <- toJSON(toSend)
+  #jsonToSend <- toJSON(toSend)
   
-  return(jsonToSend)
+  return(toSend)
   
 }
 
@@ -113,7 +133,7 @@ getSetUnion <- function(n=2, m=5) {
 #               sets, correct, and incorrect
 #               answers.
 #* @get /getSetIntersect
-getSetIntersect <- function(n=2, m=5) {
+getSetIntersectMC <- function(n=2, m=5) {
   
   n <-2   #currently, the api only supports 2 sets. 
   
@@ -135,6 +155,7 @@ getSetIntersect <- function(n=2, m=5) {
   #only going to work for 2 sets so far. 
   answer <- intersect(sourceSets[[1]], sourceSets[[2]])
   answer <- answer[order(answer, decreasing = FALSE)]
+
   
   
   #Distractors
@@ -163,22 +184,39 @@ getSetIntersect <- function(n=2, m=5) {
   d3 <- c(d3, not(sourceSets[[2]], sourceSets[[1]]))
   
   #adding all disctractors to "wrongs" vector.
+  #formatting as string here as well. 
   
   wrongs <- list()
-  wrongs[[1]] <- d1
-  wrongs[[2]] <- d2
-  wrongs[[3]] <- d3
+  wrongs[[1]] <- formatListAsSet(d1)
+  wrongs[[2]] <- formatListAsSet(d2)
+  wrongs[[3]] <- formatListAsSet(d3)
  
+  
+
+  #format source sets as strings
+  counter <- 1
+  for(s in sourceSets){
+    current <- formatListAsSet(s)
+    sourceSets[counter] <- current
+    counter <- counter + 1
+  }
+
+  #format answer as string
+  answer <- formatListAsSet(answer)
+
+  
   questionStr <- "Select the correct intersection of the following sets"
   
   sourceSets <- c(questionStr, sourceSets)
+
+  
   
   #format answers and sources into json and return results 
-  toSend <- list(source= sourceSets, answer= answer, wrongs= wrongs)
+  toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
   
-  jsonToSend <- toJSON(toSend)
   
-  return(jsonToSend)
+  
+  return(toSend)
   
 }
 
@@ -200,7 +238,7 @@ getSetIntersect <- function(n=2, m=5) {
 #               sets, correct, and incorrect
 #               answers.
 #* @get /getAsymDiff
-getAsymDiff <- function(n=2, m=5) {
+getAsymDiffMC <- function(n=2, m=5) {
   
   n <-2   #currently, the api only supports 2 sets. 
   
@@ -249,16 +287,64 @@ getAsymDiff <- function(n=2, m=5) {
     }
   }
   
+
+  #format wrong answers as strings
+  counter <- 1
+  for (w in wrongs){
+    current <- formatListAsSet(w)
+    wrongs[counter] <- current
+    counter <- counter + 1
+  }
   
+ #format source sets as strings
+  counter <- 1
+  for(s in sourceSets){
+    current <- formatListAsSet(s)
+    sourceSets[counter] <- current
+    counter <- counter + 1
+  }
+
+  answer <- formatListAsSet(answer)
+
   questionStr <- "Select the correct set difference A-B where the first set is A and the second is B"
   
   sourceSets <- c(questionStr, sourceSets)
   
   #format answers and sources into json and return results 
-  toSend <- list(source= sourceSets, answer= answer, wrongs= wrongs)
+  toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
   
-  jsonToSend <- toJSON(toSend, pretty = TRUE)
   
-  return(jsonToSend)
+  return(toSend)
+  
+}
+
+# getSetCompliment() generates and prepares n sets of m integers 
+# as well as 3 "distractors" and 1 correct answer.
+# The correct answer relfects the compliment of the n sets against the
+# set that ranges from 0 to 20.
+# 
+
+
+#* @param  n        The number of sets to consider
+#* @param  m        The number of elements in each set. 
+#* @response json   A json object containing the
+#                   sets, correct, and incorrect
+#                   answers.
+#* @get /getSetCompliment
+
+getSetCompliment <- function(n=1, m = 5) {
+
+  sourceSets <- list()    #creating an empty list. Elements will be sets 
+  
+  #for each in a given number of sets, fill the set with ints (1:9)
+  for(e in (1:n)) {
+    sourceSets[[e]] <- sample(1:9, m, replace = F)
+  }
+  allElements <- vector()
+  
+  for(e in sourceSets) {
+    #print(e)
+    allElements <- c(allElements, e)
+  }
   
 }
