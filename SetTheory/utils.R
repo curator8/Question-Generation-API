@@ -15,10 +15,8 @@ formatListAsSet <- function(inputList){
     result <- paste(c(inputList), collapse=', ')
 
     #insert prefix and postfix. escape character nonsense involved here. 
-    prefix <- r"(\\{)"
-    postfix <- r"(\\})"
-    result <- str_c(prefix, result, postfix)
-    return(result)
+    finalResult <- paste("\\{", result," \\}")
+    return(finalResult)
 }
 
 
