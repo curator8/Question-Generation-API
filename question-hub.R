@@ -1,7 +1,6 @@
 # Author:         Trevor Strobel
 # File:           question-hub.R
 # Date:           4/11/2021
-# Last Updated:   4/11/2021
 
 library(plumber)
 library(jsonlite)
@@ -29,7 +28,7 @@ cors <- function(res) {
 }
 
 #* @post /getSetUnion
-getSetUnionQ <- function(qType = 1, qDifficulty = 1){
+getSetUnionQ <- function(qType = 1, qDifficulty = 1 ){
   qTopic <- "setUnion"
   qFormat <- "1"
   output <- "If you're seeing this, Question Generation isn't working properly."

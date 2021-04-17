@@ -53,7 +53,7 @@ getSetUnionMC <- function(n=2, m=5) {
 
   #for each in a given number of sets
   for(e in (1:n)) {
-    sets[[e]] <- sample(1:20, m, replace = F)
+    sets[[e]] <- sample(1:20, m, replace = TRUE)
   }
 
   #only going to work for 2 sets so far. 
@@ -90,7 +90,7 @@ getSetUnionMC <- function(n=2, m=5) {
   
   #sorts and adds wrong answers to wrongs list.
   for(e in (iWrongs:3)) {
-    current <- sort((sample(1:20, (numEntries), replace = F)), decreasing = FALSE)
+    current <- sort((sample(1:20, (numEntries), replace = T)), decreasing = FALSE)
     wrongs[[iWrongs]] <- formatListAsSet(current)
     iWrongs <- iWrongs + 1
   }
@@ -107,15 +107,8 @@ getSetUnionMC <- function(n=2, m=5) {
     sets[counter] <- current
     counter <- counter + 1
   }
-  
-  #avilk: sets modified in order to have them displayed with the text.
-  sets <- insertSetQStrings(sets) 
 
-  qstn<-("What \\; is \\; A\\cup B?")
-  
-  
- #avilk: the question was moved to the end of the list 
-  sets <- c( sets, qstn)
+  sets <- c("Select the correct union of the following sets", sets)
   
   #format answers and sources into json and return results 
   toSend <- list(content= sets, correct= answer, distractors= wrongs)
@@ -211,15 +204,10 @@ getSetIntersectMC <- function(n=2, m=5) {
   #format answer as string
   answer <- formatListAsSet(answer)
 
-  #inserting string formatting "Let A = ...."
-  sourceSets <- insertSetQStrings(sourceSets)
   
-  #The actual question being asked of the sets. 
-  questionStr <- "What \\; is \\; A\\cap B?"
+  questionStr <- "Select the correct intersection of the following sets"
   
-  
-  #combining the source sets and question string. 
-  sourceSets <- c(sourceSets, questionStr)
+  sourceSets <- c(questionStr, sourceSets)
 
   
   
@@ -318,14 +306,9 @@ getAsymDiffMC <- function(n=2, m=5) {
 
   answer <- formatListAsSet(answer)
 
-  #inserting string formatting "Let A = ...."
-  sourceSets <- insertSetQStrings(sourceSets)
+  questionStr <- "Select the correct set difference A-B where the first set is A and the second is B"
   
-  #The actual question being asked of the sets. 
-  questionStr <- "What \\; is \\; A-B?"
-  
-  #combining the source sets and question string.
-  sourceSets <- c(sourceSets, questionStr)
+  sourceSets <- c(questionStr, sourceSets)
   
   #format answers and sources into json and return results 
   toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
