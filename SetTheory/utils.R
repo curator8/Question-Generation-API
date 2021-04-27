@@ -15,7 +15,7 @@ formatListAsSet <- function(inputList){
     result <- paste(c(inputList), collapse=', ')
 
     #insert prefix and postfix. escape character nonsense involved here. 
-    finalResult <- paste("\\{", result," \\}")
+    finalResult <- paste("\\$\\{", result," \\}\\$")
     return(finalResult)
 }
 
@@ -27,9 +27,10 @@ formatListAsSet <- function(inputList){
 #  'and \\; B=' [a set of numbers] 
 #  'be \\; two \\; sets.'
 insertSetQStrings <- function(sets) {
-    sets[1] <- paste('Let \\; A=', sets[1])
-    sets[2] <- paste('and \\; B=', sets[2])
-    sets[3] <- 'be \\; two \\; sets.'
+    nsets <- list()
+    #nsets[1] <- 'Let A and B be two sets. What is \\$A\\cup B\\$?'
+    nsets[1] <- paste('\\$A=\\$', sets[1])
+    nsets[2] <- paste('\\$B=\\$',sets[2])
 
-    return(sets)
+    return(nsets)
 }
