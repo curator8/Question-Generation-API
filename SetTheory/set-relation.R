@@ -111,11 +111,11 @@ getSetUnionMC <- function(n=2, m=5) {
   #avilk: sets modified in order to have them displayed with the text.
   sets <- insertSetQStrings(sets) 
 
-  qstn<-("What \\; is \\; A\\cup B?")
+  qstn<-('Let A and B be two sets. What is \\$A\\cup B\\$?')
   
   
  #avilk: the question was moved to the end of the list 
-  sets <- c( sets, qstn)
+  sets <- c( qstn, sets)
   
   #format answers and sources into json and return results 
   toSend <- list(content= sets, correct= answer, distractors= wrongs)
@@ -215,11 +215,11 @@ getSetIntersectMC <- function(n=2, m=5) {
   sourceSets <- insertSetQStrings(sourceSets)
   
   #The actual question being asked of the sets. 
-  questionStr <- "What \\; is \\; A\\cap B?"
+  questionStr <- "Let A and B be two sets. What is \\$A\\cap B\\$?"
   
   
   #combining the source sets and question string. 
-  sourceSets <- c(sourceSets, questionStr)
+  sourceSets <- c(questionStr, sourceSets)
 
   
   
@@ -322,10 +322,10 @@ getAsymDiffMC <- function(n=2, m=5) {
   sourceSets <- insertSetQStrings(sourceSets)
   
   #The actual question being asked of the sets. 
-  questionStr <- "What \\; is \\; A-B?"
+  questionStr <- "Let A and B be two sets. What is A-B?"
   
   #combining the source sets and question string.
-  sourceSets <- c(sourceSets, questionStr)
+  sourceSets <- c(questionStr, sourceSets)
   
   #format answers and sources into json and return results 
   toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
