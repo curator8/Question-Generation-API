@@ -58,7 +58,7 @@ getSetUnionMC <- function(n=2, m=5) {
 
   #only going to work for 2 sets so far. 
   answer <- union(sets[[1]], sets[[2]])
-  answer <- answer[order(answer)]
+  #answer <- answer[order(answer)]
 
   #formats answer as a string
   #answer <- paste(c(answer), collapse=', ')
@@ -82,15 +82,14 @@ getSetUnionMC <- function(n=2, m=5) {
   # can be provided as an incorrect answer.
   if(length(dupeSets) != length(answer)) { 
     #add dupeSets to the list of incorrect answers
-    current <- sort(dupeSets, decreasing = FALSE)
-    wrongs[[iWrongs]] <- formatListAsSet(current)
+    wrongs[[iWrongs]] <- formatListAsSet(dupeSets)
     iWrongs <- iWrongs + 1
     
   }
   
   #sorts and adds wrong answers to wrongs list.
   for(e in (iWrongs:3)) {
-    current <- sort((sample(1:20, (numEntries), replace = F)), decreasing = FALSE)
+    current <- (sample(1:20, (numEntries), replace = F))
     wrongs[[iWrongs]] <- formatListAsSet(current)
     iWrongs <- iWrongs + 1
   }
@@ -161,7 +160,6 @@ getSetIntersectMC <- function(n=2, m=5) {
   
   #only going to work for 2 sets so far. 
   answer <- intersect(sourceSets[[1]], sourceSets[[2]])
-  answer <- answer[order(answer, decreasing = FALSE)]
 
   
   
@@ -171,9 +169,8 @@ getSetIntersectMC <- function(n=2, m=5) {
   # This tests the users knowledge of whether intersection should include 
   # duplicates in the answer. 
   d1 <- c(answer, answer)
-  #print("D1")
-  #print(d1)
-  d1 <- sort(d1, decreasing = FALSE)
+  
+  
   
   
   
@@ -272,12 +269,10 @@ getAsymDiffMC <- function(n=2, m=5) {
   
   # Distractor 1 (d1) is the difference of A-B and the difference B-A
   d1 <- c(answer, not(sourceSets[[2]], sourceSets[[1]]))
-  d1 <- sort(d1, decreasing = FALSE)
-  
+
   # Distractor 2 (d2) is the difference B-A (the correct is A-B)
   d2 <- not(sourceSets[[2]], sourceSets[[1]])
-  d2 <- sort(d2, decreasing = FALSE)
-  
+
   # Distractor 3 (d3) is the intersection of sets A and B
   d3 <- intersect(sourceSets[[1]], sourceSets[[2]])
   
