@@ -3,7 +3,7 @@
 # Date:           4/11/2021
 
 library(plumber)
-library(jsonlite)
+library(jsonlite) #TODO: do we need this here? 5/13/21
 
 
 source("SetTheory/set-relation.R")
@@ -13,7 +13,7 @@ source("SetTheory/set-relation.R")
 #This file describes the generation of multiple choice questions
 # on the topic of Sets.
 
-
+#TODO: remove this? 5/13/21
 options_plumber(
   port = 3157
 )
@@ -34,6 +34,7 @@ getSetUnionQ <- function(qType = 1, qDifficulty = 1 ){
   output <- "If you're seeing this, Question Generation isn't working properly."
   #question specifics are returned as a list
   question <- list()
+  
   
   if(qType == 1){
     question <- getSetUnionMC()

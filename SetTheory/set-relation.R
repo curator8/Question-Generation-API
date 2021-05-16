@@ -12,21 +12,12 @@ source("SetTheory/utils.R")
 #TODO: 3/15/21 clean up redundant code. need a makeSets(n,m) function instead of 
 #       repeating the set gen code for each operation.
 
-options_plumber(
-  port = 3157
-)
 #The purpose of this file is provide an API from which
 # a web browser may request a problem to solve regarding
 # set operations. 
 
 
-#The following is pretty unsafe and is only planned to be used during early development. 
-#It allows for Cross Origin Resource Sharing from any client. 
-#* @filter cors
-cors <- function(res) {
-  res$setHeader("Access-Control-Allow-Origin", "*")
-  plumber::forward()
-}
+
 
 # getSetUnionMC(n) generates and prepares n sets
 # of size m as well as 3 false "answers" and 1 
@@ -34,7 +25,7 @@ cors <- function(res) {
 # said sets. 
 #* @param  n     The number of sets to consider
 #* @param  m     The number of elements in each set. 
-# @return json  A json object containing the
+#* @return json  A json object containing the
 #               sets, correct, and incorrect
 #               answers.
 #* @get  /getSetUnionMC
