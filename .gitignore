@@ -51,4 +51,4 @@ api_spec.txt
 html
 
 #python
-__pychache__/
+utils/__pychache__/

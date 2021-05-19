@@ -108,7 +108,7 @@ getStrings <- function(size = 1, cat = 6){
   return(strings)
 }
 
-x <- getStrings(3)
+x <- getStrings(10)
 print(x)
 
 
