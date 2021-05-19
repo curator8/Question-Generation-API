@@ -5,13 +5,17 @@
 # ISPeL Question Generation API. The elements generated are for use in any
 # questions that require a set, array, etc. filled with data.
 
+
 #For uniformity and compatibility, each method returns a list of
 # the desired data type(s).
 
+
+#NOTE: currently, only positive numbers are generated. 
+
 library('stringi')
-
-
 # Integer generation
+# getInt randomly generates integer numbers.
+#
 # param   size      the number of requested integers
 # param   min       minimum integer value
 # param   max       maximum integer value
@@ -32,6 +36,8 @@ getInt <- function(size = 1, min = 0, max = 10000, repl= FALSE ){
 }
 
 #Real Number Generation
+# getReal() randomly generates real numbers
+#
 # param    size      the number of requested Real numbers
 # param   min       minimum real number value
 # param   max       maximum real number value
@@ -49,6 +55,8 @@ getReal <- function(size = 1, min = 0, max = 10000, dec = 6){
 
 
 #Complex Number Generation
+# getComplex() randomly generates complex numbers
+#
 # param   size      The number of requested complex nubmers
 # param   min       The minimum real or complex coefficient
 # param   max       The maximum real or complex coefficient
@@ -75,6 +83,11 @@ getComplex <- function(size = 1, min = 0, max = 10000, type = 1){
   
 
 # Character Generation
+# getCharString pseudo-randomly generates a string of alphabetical 
+# characters. Although this function's purpose to to return a list
+# of single character vectors, the option is available to return
+# a list of strings by specifying a length greater than 1.
+#
 # param   size      Number of character 'strings' to return
 # param   length    Length of the character string(s)
 #
@@ -83,19 +96,23 @@ getCharString <- function(size = 1, length = 1){
   chars <- list()
   
   for(i in (1:size)){
+    #generates 1 random string
     x <- stri_rand_strings(1,length, pattern = "[A-Za-z]")
-    chars <- c(x, chars)
+    chars <- c(x, chars) #add the string to list
   }
   return(chars)
 }
 
 
 #String Generation
+# getString does not actually generate the Strings, but rather
+# samples one of six csv files and returns the sampled strings.
+#
 # param size      Number of Strings to return
 # param cat       The category of strings (1:6)
 #                 (1: all, 2: Country names, 3: City Names
 #                 4: Male Names, 5: Female Names, 6: Names)
-getStrings <- function(size = 1, cat = 6){
+getString <- function(size = 1, cat = 6){
   strings <- list()
   
   # generate file and read the appropriate file
