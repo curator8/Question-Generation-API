@@ -55,7 +55,11 @@ getReal <- function(size = 1, min = 0, max = 10000, dec = 6){
 # param   type      int(1:3) The data type of the coefficient 
 #                   (1: int, 2: real, 3: mixed)
 #return             List of complex numbers
-
+getComplex <- function(size = 1, min = 0, max = 10000, type = 1){
+  complexNums <- list()
+  
+  
+}
 
 
 #dev testing code.
