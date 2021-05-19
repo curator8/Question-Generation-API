@@ -98,7 +98,11 @@ getCharString <- function(size = 1, length = 1){
 getStrings <- function(size = 1, cat = 6){
   strings <- list()
   
-  data <- readLines("utils/StringData/names.csv")
+  # generate file and read the appropriate file
+  fName = paste("utils/StringData/", cat, ".csv", sep = "")
+  data <- readLines(fName)
+  
+  # populate output with sample from the appropriate data
   for(x in (1:size)){
     i <- sample.int(length(data), 1)
     d <- data[i]
@@ -108,8 +112,7 @@ getStrings <- function(size = 1, cat = 6){
   return(strings)
 }
 
-x <- getStrings(10)
-print(x)
+
 
 
 
