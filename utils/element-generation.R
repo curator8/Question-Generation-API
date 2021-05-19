@@ -8,7 +8,7 @@
 #For uniformity and compatibility, each method returns a list of
 # the desired data type(s).
 
-
+library('stringi')
 
 
 # Integer generation
@@ -52,28 +52,65 @@ getReal <- function(size = 1, min = 0, max = 10000, dec = 6){
 # param   size      The number of requested complex nubmers
 # param   min       The minimum real or complex coefficient
 # param   max       The maximum real or complex coefficient
-# param   type      int(1:3) The data type of the coefficient 
-#                   (1: int, 2: real, 3: mixed)
+# param   type      int(1:2) The data type of the coefficient 
+#                   (1: int, 2: real)
 #return             List of complex numbers
 getComplex <- function(size = 1, min = 0, max = 10000, type = 1){
   complexNums <- list()
   
+  for(i in(1:size)){ #integer type coefficients
+    z <- 0
+    if(type==1){
+      z <- complex(real = getInt(1), imaginary = getInt(1))
+    }
+    else if(type ==2){ #real type coefficients
+      z <- complex(real = getReal(1), imaginary = getReal(1))
+    }
+  }
+    
+    complexNums <- c(z, complexNums)
+
+  return(complexNums)
+}
   
+
+# Character Generation
+# param   size      Number of character 'strings' to return
+# param   length    Length of the character string(s)
+#
+# return            List of character strings
+getCharString <- function(size = 1, length = 1){
+  chars <- list()
+  
+  for(i in (1:size)){
+    x <- stri_rand_strings(1,length, pattern = "[A-Za-z]")
+    chars <- c(x, chars)
+  }
+  return(chars)
 }
 
 
-#dev testing code.
-print("getint(4)")
-x <- getInt(4)
+#String Generation
+# param size      Number of Strings to return
+# param cat       The category of strings (1:6)
+#                 (1: all, 2: Country names, 3: City Names
+#                 4: Male Names, 5: Female Names, 6: Names)
+getStrings <- function(size = 1, cat = 6){
+  strings <- list()
+  
+  data <- readLines("utils/StringData/names.csv")
+  for(x in (1:size)){
+    i <- sample.int(length(data), 1)
+    d <- data[i]
+    strings <- c(d, strings)
+    
+  }
+  return(strings)
+}
+
+x <- getStrings(3)
 print(x)
 
-print("getReal(5,0,10,4)")
-x <- getReal(5, 0, 10, 4)
-for (e in x){
-  print(e)
-}
 
-#complex numbers
-print("Complex nubmers:")
-z <- complex(real = getInt(1), imaginary = getInt(1))
-print(z)
+
+

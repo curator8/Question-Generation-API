@@ -49,3 +49,6 @@ po/*~
 latexMath.pdf
 api_spec.txt
 html
+
+#python
+__pychache__/
