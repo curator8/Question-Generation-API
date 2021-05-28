@@ -116,7 +116,7 @@ getString <- function(size = 1, cat = 6){
   strings <- list()
   
   # generate file and read the appropriate file
-  fName = paste("utils/StringData/", cat, ".csv", sep = "")
+  fName <- paste("utils/StringData/", cat, ".csv", sep = "")
   data <- readLines(fName)
   
   # populate output with sample from the appropriate data
@@ -130,7 +130,7 @@ getString <- function(size = 1, cat = 6){
 }
 
 
-
-
+x <- getCharString(3, 1)
+print(x)
 
 

@@ -28,7 +28,7 @@ source("SetTheory/utils.R")
 #* @return json  A json object containing the
 #               sets, correct, and incorrect
 #               answers.
-#* @get  /getSetUnionMC
+
 getSetUnionMC <- function(n=2, m=5) {
   wrongs <- list() #creates an empty list of wrong answers
   iWrongs <- 1     #index of wrong answer list.
@@ -49,10 +49,7 @@ getSetUnionMC <- function(n=2, m=5) {
 
   #only going to work for 2 sets so far. 
   answer <- union(sets[[1]], sets[[2]])
-  #answer <- answer[order(answer)]
-
-  #formats answer as a string
-  #answer <- paste(c(answer), collapse=', ')
+  
   
   #adds mathjax formatting to string
   #NOTE: doesn't format correctly. R's fault. 
@@ -85,12 +82,8 @@ getSetUnionMC <- function(n=2, m=5) {
     iWrongs <- iWrongs + 1
   }
   
-  #TODO: remove. for debugging  
-  #for (e in wrongs) {
-  #  print(sort(e, decreasing = FALSE))
-  #}
   
- 
+ #TODO: comment this
   counter <- 1
   for(s in sets){
     current <- formatListAsSet(s)
@@ -129,7 +122,7 @@ getSetUnionMC <- function(n=2, m=5) {
 # @return json  A json object containing the
 #               sets, correct, and incorrect
 #               answers.
-#* @get /getSetIntersect
+
 getSetIntersectMC <- function(n=2, m=5) {
   
   n <-2   #currently, the api only supports 2 sets. 
@@ -232,12 +225,12 @@ getSetIntersectMC <- function(n=2, m=5) {
 # NOTE: the results reflect A-B where A is the first set in
 # 'source' and B is the second set in 'source'
 
-#* @param  n     The number of sets to consider
-#* @param  m     The number of elements in each set. 
-#* @response json  A json object containing the
-#               sets, correct, and incorrect
-#               answers.
-#* @get /getAsymDiff
+# @param    n       The number of sets to consider
+# @param    m       The number of elements in each set. 
+# @response json    A json object containing the
+#                   sets, correct, and incorrect
+#                   answers.
+
 getAsymDiffMC <- function(n=2, m=5) {
   
   n <-2   #currently, the api only supports 2 sets. 
@@ -333,7 +326,6 @@ getAsymDiffMC <- function(n=2, m=5) {
 #* @response json   A json object containing the
 #                   sets, correct, and incorrect
 #                   answers.
-#* @get /getSetCompliment
 
 getSetCompliment <- function(n=1, m = 5) {
 

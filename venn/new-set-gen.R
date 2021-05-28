@@ -16,12 +16,8 @@ getSetRelation <- function(n=2) {
   
   randVect = (runif(n, min=0, max = 3.9))
   
- 
-  
-  
   #an empty vector. will hold set names and operators
   relationVec <- c()
-  
   
   count = 1 #Used to keep track of what set is being considered. 1 = A, 2 = B, etc.
   for (val in randVect) {
@@ -51,7 +47,6 @@ getSetRelation <- function(n=2) {
       
       count = count + 1
     }
-    
   }
   
   #occasionally all values would be over 3, resulting in an empty relationship. 

@@ -13,10 +13,7 @@ source("SetTheory/set-relation.R")
 #This file describes the generation of multiple choice questions
 # on the topic of Sets.
 
-#TODO: remove this? 5/13/21
-options_plumber(
-  port = 3157
-)
+
 
 
 #The following is pretty unsafe and is only planned to be used during early development. 
