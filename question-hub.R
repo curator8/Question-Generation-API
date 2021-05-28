@@ -3,29 +3,25 @@
 # Date:           4/11/2021
 
 library(plumber)
-library(jsonlite) #TODO: do we need this here? 5/13/21
-
-
 source("SetTheory/set-relation.R")
-
-
-
-#This file describes the generation of multiple choice questions
-# on the topic of Sets.
+#this file acts as a routing hub to fetch questions for use in the ISPeL system.
 
 
 
 
 #The following is pretty unsafe and is only planned to be used during early development. 
 #It allows for Cross Origin Resource Sharing from any client. 
+# TODO: I'm not going to worry about this for the time being as the API is only available on
+# the server. The port is not exposed to the network, so it shouldn't be an issue. 
 #* @filter cors
 cors <- function(res) {
   res$setHeader("Access-Control-Allow-Origin", "*")
   plumber::forward()
 }
 
+
 #* @post /getSetUnion
-getSetUnionQ <- function(qType = 1, qDifficulty = 1 ){
+getSetUnionQ <- function(qType = 1, qDifficulty = 1, dataType = 1 ){
   qTopic <- "setUnion"
   qFormat <- "1"
   output <- "If you're seeing this, Question Generation isn't working properly."
@@ -34,7 +30,7 @@ getSetUnionQ <- function(qType = 1, qDifficulty = 1 ){
   
   
   if(qType == 1){
-    question <- getSetUnionMC()
+    question <- getSetUnionMC(dType = dataType)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
   
@@ -43,7 +39,7 @@ getSetUnionQ <- function(qType = 1, qDifficulty = 1 ){
 
 
 #* @post /getSetIntersect
-getSetIntersect <- function(qType = 1, qDifficulty = 1) {
+getSetIntersect <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   qTopic <- "setIntersect"
   qFormat <- "1"
   output <- "If you're seeing this message, question generation isn't working properly."
@@ -52,7 +48,7 @@ getSetIntersect <- function(qType = 1, qDifficulty = 1) {
   question <- list()
   
   if(qType == 1){
-    question <- getSetIntersectMC()
+    question <- getSetIntersectMC(dType = dataType)
     
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }

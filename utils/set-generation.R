@@ -21,7 +21,7 @@ library('stringi')
 # param   max       maximum integer value
 # param   repl      should the sample generation use replacement?  
 # return            list of integers
-getInt <- function(size = 1, min = 0, max = 10000, repl= FALSE ){
+getInt <- function(size = 1, min = 1, max = 10000, repl= FALSE ){
   ints <- list()
   if((max - min) < size){
     print("The size of the requested list is larger than the pool of available integers. Forcing replacement...")
@@ -63,20 +63,20 @@ getReal <- function(size = 1, min = 0, max = 10000, dec = 6){
 # param   type      int(1:2) The data type of the coefficient 
 #                   (1: int, 2: real)
 #return             List of complex numbers
-getComplex <- function(size = 1, min = 0, max = 10000, type = 1){
+getComplex <- function(size = 1, min = 1, max = 10000, type = 1){
   complexNums <- list()
   
   for(i in(1:size)){ #integer type coefficients
     z <- 0
     if(type==1){
-      z <- complex(real = getInt(1), imaginary = getInt(1))
+      z <- complex(real = getInt(1, min = min, max = max), imaginary = getInt(1, min = min, max = max))
     }
     else if(type ==2){ #real type coefficients
-      z <- complex(real = getReal(1), imaginary = getReal(1))
+      z <- complex(real = getReal(1, min = min, max = max), imaginary = getReal(1, min = min, max = max))
     }
+    complexNums <- c(z, complexNums)
   }
     
-    complexNums <- c(z, complexNums)
 
   return(complexNums)
 }
@@ -130,7 +130,52 @@ getString <- function(size = 1, cat = 6){
 }
 
 
-x <- getCharString(3, 1)
+
+
+
+#Set Generation
+# getSets generates n sets of m elements of type x.
+#
+# param   n       Number of sets to return
+# param   m       Number of elements in the set
+# param   x       Data type of elements in the sets
+#                 (1: Ints, 2: Real, 3: Complex, 
+#                  4: Char, 5: String, 6: Mixed)
+#
+# returns         list of sets
+
+
+getSets <- function(n = 2, m = 5, x = 1){
+  sets <- list()
+  for(s in (1:n)){
+    if(x == 1){           # Integers
+      sets[[s]] <- getInt(size = m, min=1, max=20)
+    }
+    else if(x == 2){           # Reals
+      sets[[s]] <- getReal(size = m, max = 20)
+    }
+    else if(x == 3){           # Complex
+      sets[[s]] <- getComplex(size = m, max = 10)
+    }
+    else if(x == 4){           # Chars
+      sets[[s]] <- getCharString(size = m)
+    }
+    else if(x == 5){           # Strings
+      sets[[s]] <- getString(size = m, cat = 6) #defaulted content to "names"
+    }
+    else if(x == 6){           # Mixed 
+      #TODO: this nests inside another loop. lets find a more elegant way to do this.
+      sets[[s]] <- getSets(1, m, x = sample(1:5, 1, replace = FALSE))
+    }
+  }
+  return(sets)
+}
+
+
+
+
+
+
+x <- getSets(2,5,1)
+
 print(x)
-
-

@@ -2,34 +2,34 @@
 # File:           set-Relation.R
 
 library(plumber)
-library(jsonlite)
 library(set)
 
-source("SetTheory/utils.R")
+
+source("utils/format.R") #set string formatting
+source("utils/set-generation.R") #set generation
 
 
-
-#TODO: 3/15/21 clean up redundant code. need a makeSets(n,m) function instead of 
-#       repeating the set gen code for each operation.
-
-#The purpose of this file is provide an API from which
-# a web browser may request a problem to solve regarding
-# set operations. 
+# This file describes individual problems related to Set Theory
 
 
 
 
-# getSetUnionMC(n) generates and prepares n sets
-# of size m as well as 3 false "answers" and 1 
+# getSetUnionMC() generates and prepares a number
+# of sets as well as 3 "distractors" and 1 
 # correct "answer" when considering the union of
 # said sets. 
-#* @param  n     The number of sets to consider
-#* @param  m     The number of elements in each set. 
-#* @return json  A json object containing the
-#               sets, correct, and incorrect
-#               answers.
+#
+# param   n       The number of sets to consider
+# param   m       The number of elements in each set. 
+# param   dType   The desired data type for set elements
+#                 (1: Ints, 2: Real, 3: Complex, 
+#                  4: Char, 5: String, 6: Mixed)               
+#
+# return  toSend  A json-like object containing the
+#                 sets, correct, and incorrect
+#                 answers.
 
-getSetUnionMC <- function(n=2, m=5) {
+getSetUnionMC <- function(n=2, m=5, dType = 1) {
   wrongs <- list() #creates an empty list of wrong answers
   iWrongs <- 1     #index of wrong answer list.
   
@@ -38,25 +38,15 @@ getSetUnionMC <- function(n=2, m=5) {
   } else {
     numEntries = 10
   }
-  #creates a single vector. Ints ranging 1 to 20. 20 ints in the vector.
-
-  sets <- list()    #creating an empty list. Elements will be sets 
-
-  #for each in a given number of sets
-  for(e in (1:n)) {
-    sets[[e]] <- sample(1:20, m, replace = F)
-  }
-
+  
+  # fill sets with data
+  sets <- getSets(x = dType)
+  
   #only going to work for 2 sets so far. 
   answer <- union(sets[[1]], sets[[2]])
   
   
-  #adds mathjax formatting to string
-  #NOTE: doesn't format correctly. R's fault. 
-  answer <- formatListAsSet(answer)
 
-
-  
   #The following decides if there was a duplicate in the original sets.
   # If so, it provides the union with duplicates to be used as an incorrect
   # answer. 
@@ -75,7 +65,7 @@ getSetUnionMC <- function(n=2, m=5) {
     
   }
   
-  #sorts and adds wrong answers to wrongs list.
+  #adds wrong answers to wrongs list.
   for(e in (iWrongs:3)) {
     current <- (sample(1:20, (numEntries), replace = F))
     wrongs[[iWrongs]] <- formatListAsSet(current)
@@ -91,19 +81,21 @@ getSetUnionMC <- function(n=2, m=5) {
     counter <- counter + 1
   }
   
+  #adds mathjax formatting to string
+  answer <- formatListAsSet(answer)
+  
   #avilk: sets modified in order to have them displayed with the text.
   sets <- insertSetQStrings(sets) 
 
   qstn<-('Let A and B be two sets. What is \\$A\\cup B\\$?')
   
   
- #avilk: the question was moved to the end of the list 
+  #avilk: the question was moved to the end of the list 
   sets <- c( qstn, sets)
   
   #format answers and sources into json and return results 
   toSend <- list(content= sets, correct= answer, distractors= wrongs)
   
-  #jsonToSend <- toJSON(toSend)
   
   return(toSend)
   
@@ -112,27 +104,24 @@ getSetUnionMC <- function(n=2, m=5) {
 
 
 
-#getSetIntersect(n, m) generates and prepares n sets
-# of m integers, 3 "distractors" and 1 correct answer
+# getSetIntersect() generates and prepares n sets
+# of m elements, 3 "distractors" and 1 correct answer
 # when considering the intersections of said sets.
-#TODO: CURRENTLY ONLY SUPPORTS TWO SETS.
+#
+# param   n       The number of sets to consider
+# param   m       The number of elements in each set. 
+# param   dType   The desired data type for set elements
+#                 (1: Ints, 2: Real, 3: Complex, 
+#                  4: Char, 5: String, 6: Mixed)               
+#
+# return  toSend  A json-like object containing the
+#                 sets, correct, and incorrect
+#                 answers.
 
-#* @param  n     The number of sets to consider
-#* @param  m     The number of elements in each set. 
-# @return json  A json object containing the
-#               sets, correct, and incorrect
-#               answers.
-
-getSetIntersectMC <- function(n=2, m=5) {
+getSetIntersectMC <- function(n=2, m=5, dType = 1) {
   
   n <-2   #currently, the api only supports 2 sets. 
-  
-  sourceSets <- list()    #creating an empty list. Elements will be sets 
-  
-  #for each in a given number of sets, fill the set with ints (1:10)
-  for(e in (1:n)) {
-    sourceSets[[e]] <- sample(1:9, m, replace = F)
-  }
+  sourceSets <- getSets(x = dType)  #fills lists with data
   
   allElements <- vector()
   
@@ -248,14 +237,14 @@ getAsymDiffMC <- function(n=2, m=5) {
     allElements <- c(allElements, e)
   }
   
-  answer <- not(sourceSets[[1]], sourceSets[[2]])
+  answer <- set::not(sourceSets[[1]], sourceSets[[2]])
   
   
   # Distractor 1 (d1) is the difference of A-B and the difference B-A
-  d1 <- c(answer, not(sourceSets[[2]], sourceSets[[1]]))
+  d1 <- c(answer, set::not(sourceSets[[2]], sourceSets[[1]]))
 
   # Distractor 2 (d2) is the difference B-A (the correct is A-B)
-  d2 <- not(sourceSets[[2]], sourceSets[[1]])
+  d2 <- set::not(sourceSets[[2]], sourceSets[[1]])
 
   # Distractor 3 (d3) is the intersection of sets A and B
   d3 <- intersect(sourceSets[[1]], sourceSets[[2]])
