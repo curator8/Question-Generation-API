@@ -89,6 +89,7 @@ getSetComplement <- function(qType = 1, qDifficulty = 1) {
   return(output)
 }
 
+#* @post /getSetEquality
 getSetEquality <- function(qType = 1, qDifficulty = 1) {
   qTopic <- "SetEquality"
   qFormat <- "1"
