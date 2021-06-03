@@ -69,6 +69,9 @@ getAsymDiff <- function(qType = 1, qDifficulty = 1) {
   
   return (output)
 }
+
+#* @post /getSetComplement
+#* @param qType   The data type.
 getSetComplement <- function(qType = 1, qDifficulty = 1) {
   qTopic <- "SetComplement"
   qFormat <- "1"

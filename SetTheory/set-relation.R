@@ -310,14 +310,14 @@ getAsymDiffMC <- function(n=2, m=5, dType = 1) {
 # The correct answer relfects the compliment of the n sets against the
 # set that ranges from 0 to 20.
 # 
-
-
-#* @param  n        The number of sets to consider
-#* @param  m        The number of elements in each set. 
-#* @response json   A json object containing the
+#
+#
+# @param  n        The number of sets to consider
+# @param  m        The number of elements in each set. 
+# @response json   A json object containing the
 #                   sets, correct, and incorrect
 #                   answers.
-
+#
 getSetComplementMC <- function(n=1, m = 5, dType = 1) {
   
   sourceSet <- list()    #creating an empty list.  
@@ -329,7 +329,7 @@ getSetComplementMC <- function(n=1, m = 5, dType = 1) {
   allElements <- vector()
   
   print(sourceSet)
-  anwser <- not(sourceSet, universalSet)
+  answer <- not(sourceSet, universalSet)
   
   #distractor 1 is the intersection of the sets which is the wrong answer
   d1 <- intersect(sourceSet, universalSet)
@@ -434,7 +434,7 @@ getSetCardinalityMC <- function(n=1, m = 5, dType = 1) {
   print(sourceSet)
   
   #using cardinality operation from nsprcomp library
-  anwser <- cardinality(sourceSet)
+  answer <- cardinality(sourceSet)
   
   d1 <- cardinality(sourceSet) - 1
   
