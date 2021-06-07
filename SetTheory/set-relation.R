@@ -1,7 +1,6 @@
 # Author:         Trevor Strobel
 # File:           set-Relation.R
 
-library(plumber)
 library(set)
 
 
@@ -19,84 +18,87 @@ source("utils/set-generation.R") #set generation
 # correct "answer" when considering the union of
 # said sets. 
 #
-# param   n       The number of sets to consider
-# param   m       The number of elements in each set. 
-# param   dType   The desired data type for set elements
-#                 (1: Ints, 2: Real, 3: Complex, 
-#                  4: Char, 5: String, 6: Mixed)               
+# param   numSets     The number of sets to consider
+# param   setSize     The number of elements in each set. 
+# param   dType       The desired data type for set elements
+#                     (1: Ints, 2: Real, 3: Complex, 
+#                     4: Char, 5: String, 6: Mixed)               
 #
-# return  toSend  A json-like object containing the
-#                 sets, correct, and incorrect
-#                 answers.
+# return  toSend      A json-like object containing the
+#                     sets, correct, and incorrect
+#                     answers.
 
-getSetUnionMC <- function(n=2, m=5, dType = 1) {
-  wrongs <- list() #creates an empty list of wrong answers
-  iWrongs <- 1     #index of wrong answer list.
+getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
+  #define the text of the question
+  questionText <-('Let A and B be two sets. What is \\$A\\cup B\\$?')
   
-  if(is.null(m) && is.null(n)){
-    numEntries <- n*m 
-  } else {
-    numEntries = 10
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  
+  #creating the correct answer
+  correct <- union(sourceSets[[1]], sourceSets[[2]])
+  if(difficulty > 1){
+    correct <- sample(correct, length(correct), replace = FALSE)
   }
   
-  # fill sets with data
-  sets <- getSets(x = dType)
+  #Create the distractors
   
-  #only going to work for 2 sets so far. 
-  answer <- union(sets[[1]], sets[[2]])
+  distractors <- vector(mode="list", length = 3)
   
+  #add distractors to the list. 
+  # each element of the list should be a set
+  # represented as a list.
   
-
-  #The following decides if there was a duplicate in the original sets.
-  # If so, it provides the union with duplicates to be used as an incorrect
-  # answer. 
-  dupeSets <- numeric(0) #creates an empty vector
-  
-  for (e in (1:n)) {
-    dupeSets <- c(dupeSets, sets[[e]])
-  }
-  
-  #if 'answer' and 'dupeSets' are of different length, then dupeSets
-  # can be provided as an incorrect answer.
-  if(length(dupeSets) != length(answer)) { 
-    #add dupeSets to the list of incorrect answers
-    wrongs[[iWrongs]] <- formatListAsSet(dupeSets)
-    iWrongs <- iWrongs + 1
+  for(i in (1:3)){
+    #generate a set
+    currentDist <- NULL
+    if(difficulty > 1){ #difficulty higher than 1 scrambles lists in output.
+      currentDist <- sample(correct, length(correct), replace = FALSE)
+    }
     
+    if(i == 1){ #alter answer by removing an element
+      currentDist <- list(currentDist[-(setSize-1)])
+    }
+    else if(i ==2){ #add an element to the correct answer
+      # the issue here is that the "incorrect" element needs to be believable and 
+      # also not possible to be in the source sets. 
+      currentDist <- list(c(currentDist, getValue(x=dType)))
+    }
+    else if(i == 3){ #remove another element
+      currentDist <- list(currentDist[-(setSize-2)])
+    }
+
+    
+    currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    
+    #Note the single brackets '[1]' here 
+    distractors[i] <- currentDist
   }
   
-  #adds wrong answers to wrongs list.
-  for(e in (iWrongs:3)) {
-    current <- (sample(1:20, (numEntries), replace = F))
-    wrongs[[iWrongs]] <- formatListAsSet(current)
-    iWrongs <- iWrongs + 1
-  }
+  
+  #formatting for output
+  correct <- formatListAsSet(correct) #format for output
   
   
- #TODO: comment this
+  #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
-  for(s in sets){
-    current <- formatListAsSet(s)
-    sets[counter] <- current
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
   
-  #adds mathjax formatting to string
-  answer <- formatListAsSet(answer)
+  #format the the sourceSets as Question Strings
+  # "A = {...}"
+  # "B = {...}"
+  sourceSets <- insertSetQStrings(sourceSets)
   
-  #avilk: sets modified in order to have them displayed with the text.
-  sets <- insertSetQStrings(sets) 
-
-  qstn<-('Let A and B be two sets. What is \\$A\\cup B\\$?')
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
   
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
   
-  #avilk: the question was moved to the end of the list 
-  sets <- c( qstn, sets)
-  
-  #format answers and sources into json and return results 
-  toSend <- list(content= sets, correct= answer, distractors= wrongs)
-  
-  
+  #return question info
   return(toSend)
   
 }
@@ -122,6 +124,7 @@ getSetIntersectMC <- function(n=2, m=5, dType = 1) {
   
   n <-2   #currently, the api only supports 2 sets. 
   sourceSets <- getSets(x = dType)  #fills lists with data
+  
   
   allElements <- vector()
   
@@ -233,7 +236,7 @@ getAsymDiffMC <- function(n=2, m=5) {
   allElements <- vector()
   
   for(e in sourceSets) {
-    print(e)
+    #print(e)
     allElements <- c(allElements, e)
   }
   
@@ -332,3 +335,6 @@ getSetCompliment <- function(n=1, m = 5) {
   }
   
 }
+
+
+x <- getSetUnionMC()

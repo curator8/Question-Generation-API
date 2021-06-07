@@ -4,10 +4,9 @@
 
 library(plumber)
 source("SetTheory/set-relation.R")
+
+
 #this file acts as a routing hub to fetch questions for use in the ISPeL system.
-
-
-
 
 #The following is pretty unsafe and is only planned to be used during early development. 
 #It allows for Cross Origin Resource Sharing from any client. 
@@ -30,7 +29,9 @@ getSetUnionQ <- function(qType = 1, qDifficulty = 1, dataType = 1 ){
   
   
   if(qType == 1){
-    question <- getSetUnionMC(dType = dataType)
+    question <- getSetUnionMC(dType = dataType, difficulty = qDifficulty)
+    
+    
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
   
