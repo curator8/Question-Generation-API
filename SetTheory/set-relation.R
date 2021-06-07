@@ -42,18 +42,17 @@ getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   }
   
   #Create the distractors
-  
   distractors <- vector(mode="list", length = 3)
   
-  #add distractors to the list. 
+  # add distractors to the list. 
   # each element of the list should be a set
   # represented as a list.
   
   for(i in (1:3)){
-    #generate a set
-    currentDist <- NULL
+    # generate a set
+    currentDist <- correct
     if(difficulty > 1){ #difficulty higher than 1 scrambles lists in output.
-      currentDist <- sample(correct, length(correct), replace = FALSE)
+      currentDist <- sample(correct, replace = FALSE)
     }
     
     if(i == 1){ #alter answer by removing an element

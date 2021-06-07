@@ -3,7 +3,7 @@
 
 
 # The functions in this file should not be called directly. The functions
-# in this file represent templates for Set Theory question generation funcitons
+# in this file represent templates for Set Theory question generation functions
 
 library(set)
 source("utils/format.R")            #set string formatting
@@ -89,4 +89,8 @@ functionName <- function(numSets = 2, setSize = 5, dType = 1){
 
 
 }
+
+
+x <- functionName()
+print(x)
 
