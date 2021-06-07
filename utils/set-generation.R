@@ -13,6 +13,7 @@
 #NOTE: currently, only positive numbers are generated. 
 
 library('stringi')
+
 # Integer generation
 # getInt randomly generates integer numbers.
 #
@@ -22,14 +23,15 @@ library('stringi')
 # param   repl      should the sample generation use replacement?  
 # return            list of integers
 getInt <- function(size = 1, min = 1, max = 10000, repl= FALSE ){
-  ints <- list()
+  ints <- vector(mode = "list", length = size)
   if((max - min) < size){
     print("The size of the requested list is larger than the pool of available integers. Forcing replacement...")
     repl = TRUE
   }
   
+    #populate the list with sampled values
     for(e in (1:size)){
-      ints[[e]] <- sample(min:max, 1, replace = repl)
+      ints[[e]] <- sample(min:max, 1, replace = repl) 
     }
   
     return(ints)
@@ -146,7 +148,7 @@ getString <- function(size = 1, cat = 6){
 
 
 getSets <- function(n = 2, m = 5, x = 1){
-  sets <- list()
+  sets <- vector(mode = "list", length = n)
   for(s in (1:n)){
     if(x == 1){           # Integers
       sets[[s]] <- getInt(size = m, min=1, max=20)
@@ -164,7 +166,7 @@ getSets <- function(n = 2, m = 5, x = 1){
       sets[[s]] <- getString(size = m, cat = 6) #defaulted content to "names"
     }
     else if(x == 6){           # Mixed 
-      #TODO: this nests inside another loop. lets find a more elegant way to do this.
+      #TODO: this nests inside another list. lets find a more elegant way to do this.
       sets[[s]] <- getSets(1, m, x = sample(1:5, 1, replace = FALSE))
     }
   }
@@ -172,10 +174,36 @@ getSets <- function(n = 2, m = 5, x = 1){
 }
 
 
-
-
-
-
-x <- getSets(2,5,1)
-
-print(x)
+#Value Generation
+# getValue generates 1 value of type x.
+#
+# param   x       Data type of elements in the sets
+#                 (1: Ints, 2: Real, 3: Complex, 
+#                  4: Char, 5: String, 6: Mixed)
+# param   min     The minimum numeric value for numeric types
+# param   max     The maximum numeric value for numeric types
+# param   cat     The category of string for string type
+#
+# returns         a single value of type x
+getValue <- function(x = 1, min = 1, max = 20, cat = 6){
+  value <- NULL
+    if(x == 1){           # Integers
+      value <- getInt(size = 1, min=min, max=max)
+    }
+    else if(x == 2){           # Reals
+      value <- getReal(size = 1, max = max)
+    }
+    else if(x == 3){           # Complex
+      value <- getComplex(size = 1, max = max)
+    }
+    else if(x == 4){           # Chars
+      value <- getCharString(size = 1)
+    }
+    else if(x == 5){           # Strings
+      value <- getString(size = 1, cat = 6) #defaulted content to "names"
+    }
+    else if(x == 6){           # Mixed 
+      value <- getSets(1, 1, x = sample(1:5, 1, replace = FALSE))
+    }
+  return(value)
+}
