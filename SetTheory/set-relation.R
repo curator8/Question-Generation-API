@@ -1,7 +1,9 @@
 # Author:         Trevor Strobel
 # File:           set-Relation.R
 
+
 library(set)
+library(nsprcomp)
 
 
 source("utils/format.R") #set string formatting
@@ -222,7 +224,7 @@ getSetIntersectMC <- function(n=2, m=5, dType = 1) {
 #                   sets, correct, and incorrect
 #                   answers.
 
-getAsymDiffMC <- function(n=2, m=5) {
+getAsymDiffMC <- function(n=2, m=5, dType = 1) {
   
   n <-2   #currently, the api only supports 2 sets. 
   
@@ -310,16 +312,75 @@ getAsymDiffMC <- function(n=2, m=5) {
 # The correct answer relfects the compliment of the n sets against the
 # set that ranges from 0 to 20.
 # 
-
-
-#* @param  n        The number of sets to consider
-#* @param  m        The number of elements in each set. 
-#* @response json   A json object containing the
+#
+#
+# @param  n        The number of sets to consider
+# @param  m        The number of elements in each set. 
+# @response json   A json object containing the
 #                   sets, correct, and incorrect
 #                   answers.
+#
+getSetComplementMC <- function(n=1, m = 5, dType = 1) {
+  
+  sourceSet <- list()    #creating an empty list.  
+  universalSet <- list(1,2,3,4,5,6,7,8,9) #universal set
+  
+  #for each in set 1, fill the set with ints (1:9)
+  sourceSet <- sample(1:9, m, replace = F)
+  
+  allElements <- vector()
+  
+  print(sourceSet)
+  answer <- not(sourceSet, universalSet)
+  
+  #distractor 1 is the intersection of the sets which is the wrong answer
+  d1 <- intersect(sourceSet, universalSet)
+  
+  #distractor 2 is the intersection and the complement together which is wrong
+  d2 <- universalSet
+  
+  #distractor 3 is the original set which is not the complement and is wrong
+  d3 <- sourceSet
+  
+  wrongs <- list()
+  wrongs[[1]] <- d1
+  wrongs[[2]] <- d2
+  wrongs[[3]] <- d3
+  
+  #format wrong answers as strings
+  counter <- 1
+  for (w in wrongs){
+    current <- formatListAsSet(w)
+    wrongs[counter] <- current
+    counter <- counter + 1
+  }
+  
+  #format source set as string
+  current <- formatListAsSet(sourceSet)
+  
+  
+  answer <- formatListAsSet(answer)
+  
+  #inserting string formatting "Let A = ...."
+  sourceSet <- insertSetQStrings(sourceSet)
+  
+  #The actual question being asked of the sets. 
+  questionStr <- "Let A be a single set. What is the complement of set A?"
+  
+  #combining the source sets and question string.
+  sourceSet <- c(questionStr, sourceSet)
+  
+  #format answers and sources into json and return results 
+  toSend <- list(content= sourceSet, correct= answer, distractors= wrongs)
+  
+  
+  return(toSend)
+  
+}
 
-getSetCompliment <- function(n=1, m = 5) {
-
+getSetEqualityMC <- function(n=2, m = 5, dType = 1) {
+  n <-2   #currently, the api only supports 2 sets. 
+  
   sourceSets <- list()    #creating an empty list. Elements will be sets 
   
   #for each in a given number of sets, fill the set with ints (1:9)
@@ -329,11 +390,94 @@ getSetCompliment <- function(n=1, m = 5) {
   allElements <- vector()
   
   for(e in sourceSets) {
-    #print(e)
+    print(e)
     allElements <- c(allElements, e)
   }
   
+  #using setdiff function from library
+  differences <- setdiff(sourceSets[[1]], sourceSets[[2]])
+  
+  if(length(differences) > 0) {
+    answer <- "Not Equal"
+    wrong <- "Equal"
+  }
+  else {
+    answer <- "Equal"
+    wrong <- "Not Equal"
+  }
+  
+  answer <- formatListAsSet(answer)
+  
+  #inserting string formatting "Let A = ...."
+  sourceSets <- insertSetQStrings(sourceSets)
+  
+  #The actual question being asked of the sets. 
+  questionStr <- "Let A and B be two sets. Are A and B equal?"
+  
+  #combining the source sets and question string.
+  sourceSets <- c(questionStr, sourceSets)
+  
+  #format answers and sources into json and return results 
+  toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
+  
+  
+  return(toSend)
 }
 
+getSetCardinalityMC <- function(n=1, m = 5, dType = 1) {
+  n <- 1 
+  m <- sample(1:9, 1)
+  sourceSet <- list() #creates an empty list
+  
+  sourceSet <- sample(1:9, m, replace = F)
+  
+  allElements <- vector()
+  
+  print(sourceSet)
+  
+  #using cardinality operation from nsprcomp library
+  answer <- cardinality(sourceSet)
+  
+  d1 <- cardinality(sourceSet) - 1
+  
+  d2 <- cardinality(sourceSet) + 1
+  
+  d3 <- 0
+  
+  wrongs <- list()
+  wrongs[[1]] <- d1
+  wrongs[[2]] <- d2
+  wrongs[[3]] <- d3
+  
+  #format wrong answers as strings
+  counter <- 1
+  for (w in wrongs){
+    current <- formatListAsSet(w)
+    wrongs[counter] <- current
+    counter <- counter + 1
+  }
+  
+  #format source set as string
+  current <- formatListAsSet(sourceSet)
+  
+  
+  answer <- formatListAsSet(answer)
+  
+  #inserting string formatting "Let A = ...."
+  sourceSet <- insertSetQStrings(sourceSet)
+  
+  #The actual question being asked of the sets. 
+  questionStr <- "Let A be a single set. What is the cardinality of set A?"
+  
+  #combining the source sets and question string.
+  sourceSet <- c(questionStr, sourceSet)
+  
+  #format answers and sources into json and return results 
+  toSend <- list(content= sourceSet, correct= answer, distractors= wrongs)
+  
+  
+  return(toSend)
+}
+  
 
-x <- getSetUnionMC()
+

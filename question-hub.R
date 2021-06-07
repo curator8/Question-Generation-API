@@ -71,3 +71,59 @@ getAsymDiff <- function(qType = 1, qDifficulty = 1) {
   return (output)
 }
 
+#* @post /getSetComplement
+#* @param qType   The data type.
+getSetComplement <- function(qType = 1, qDifficulty = 1) {
+  qTopic <- "SetComplement"
+  qFormat <- "1"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSetComplementMC()
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+  }
+  
+  return(output)
+}
+
+#* @post /getSetEquality
+getSetEquality <- function(qType = 1, qDifficulty = 1) {
+  qTopic <- "SetEquality"
+  qFormat <- "1"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSetEqualityMC()
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+    
+  }
+  
+  return(output)
+}
+getSetCardinality <- function(qType = 1, qDifficulty = 1) {
+  qTopic <- "SetCardinality"
+  qFormat <- "1"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSetCardinalityMC()
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+    
+  }
+  
+  return(output)
+}
+
+
