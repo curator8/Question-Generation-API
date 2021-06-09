@@ -147,19 +147,23 @@ getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
     if(i == 1){ #alter answer by removing an element
       if(currentDist == "\\$\\emptyset\\$"){
         currentDist <- not(sourceSets[[1]], sourceSets[[2]])
+        currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+        
       } else {
         currentDist <- "\\$\\emptyset\\$"
       }
     }
     else if(i ==2){ 
       currentDist <- list(not(sourceSets[[1]], sourceSets[[2]]))
+      currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+      
     }
     else if(i == 3){ #remove another element
       currentDist <- list(union(sourceSets[[1]], sourceSets[[2]]))
+      currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
     }
     
     
-    currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
     
     #Note the single brackets '[1]' here 
     distractors[i] <- currentDist
