@@ -86,8 +86,6 @@ functionName <- function(numSets = 2, setSize = 5, dType = 1){
     
     #return question info
     return(toSend)
-
-
 }
 
 

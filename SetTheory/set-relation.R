@@ -111,99 +111,79 @@ getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
 # of m elements, 3 "distractors" and 1 correct answer
 # when considering the intersections of said sets.
 #
-# param   n       The number of sets to consider
-# param   m       The number of elements in each set. 
-# param   dType   The desired data type for set elements
-#                 (1: Ints, 2: Real, 3: Complex, 
-#                  4: Char, 5: String, 6: Mixed)               
+# param   numSets     The number of sets to consider
+# param   setSize     The number of elements in each set. 
+# param   dType       The desired data type for set elements
+#                     (1: Ints, 2: Real, 3: Complex, 
+#                     4: Char, 5: String, 6: Mixed)               
 #
-# return  toSend  A json-like object containing the
-#                 sets, correct, and incorrect
-#                 answers.
+# return  toSend      A json-like object containing the
+#                     sets, correct, and incorrect
+#                     answers.
 
-getSetIntersectMC <- function(n=2, m=5, dType = 1) {
+getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   
-  n <-2   #currently, the api only supports 2 sets. 
-  sourceSets <- getSets(x = dType)  #fills lists with data
+  #define the text of the question
+  questionText <-('Let A and B be two sets. What is \\$A\\cap B\\$?')
   
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   
-  allElements <- vector()
+  #creating the correct answer
+  correct <- intersect(sourceSets[[1]], sourceSets[[2]])
+  if(length(correct) > 0){
+    correct <- formatListAsSet(correct) #format for output
+  } else {
+    correct <- "\\$\\emptyset\\$"
+  }
+   
+  #Create the distractors
+  distractors <- vector(mode="list", length = 3)
   
- 
-  for(e in sourceSets) {
- 
-    allElements <- c(allElements, e)
+  #add distractors to the list. 
+  for(i in (1:3)){
+    currentDist <- correct
+
+    if(i == 1){ #alter answer by removing an element
+      if(currentDist == "\\$\\emptyset\\$"){
+        currentDist <- not(sourceSets[[1]], sourceSets[[2]])
+      } else {
+        currentDist <- "\\$\\emptyset\\$"
+      }
+    }
+    else if(i ==2){ 
+      currentDist <- list(not(sourceSets[[1]], sourceSets[[2]]))
+    }
+    else if(i == 3){ #remove another element
+      currentDist <- list(union(sourceSets[[1]], sourceSets[[2]]))
+    }
+    
+    
+    currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    
+    #Note the single brackets '[1]' here 
+    distractors[i] <- currentDist
   }
   
-  #only going to work for 2 sets so far. 
-  answer <- intersect(sourceSets[[1]], sourceSets[[2]])
-
-  
-  
-  #Distractors
- 
-  # distractor 1 (d1) includes 2 copies of all elements in the answer. 
-  # This tests the users knowledge of whether intersection should include 
-  # duplicates in the answer. 
-  d1 <- c(answer, answer)
-  
-  
-  
-  
-  
-  # Distractor 2 (d2) includes all the elements from both sets. 
-  # A student not understanding the difference between union and 
-  # intersection would miss this. 
-  d2 <- allElements
-  
-  
-  # Distractor 3 (d3) includes the set difference of the source sets.
-  #d3 <- dif
-  
-  
-  d3 <- not(sourceSets[[1]], sourceSets[[2]])
-  d3 <- c(d3, not(sourceSets[[2]], sourceSets[[1]]))
-  
-  #adding all disctractors to "wrongs" vector.
-  #formatting as string here as well. 
-  
-  wrongs <- list()
-  wrongs[[1]] <- formatListAsSet(d1)
-  wrongs[[2]] <- formatListAsSet(d2)
-  wrongs[[3]] <- formatListAsSet(d3)
- 
-  
-
-  #format source sets as strings
+  #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
-  for(s in sourceSets){
-    current <- formatListAsSet(s)
-    sourceSets[counter] <- current
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
-
-  #format answer as string
-  answer <- formatListAsSet(answer)
-
-  #inserting string formatting "Let A = ...."
+  
+  #format the the sourceSets as Question Strings
+  # "A = {...}"
+  # "B = {...}"
   sourceSets <- insertSetQStrings(sourceSets)
   
-  #The actual question being asked of the sets. 
-  questionStr <- "Let A and B be two sets. What is \\$A\\cap B\\$?"
-  
-  
-  #combining the source sets and question string. 
-  sourceSets <- c(questionStr, sourceSets)
-
-  
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
   
   #format answers and sources into json and return results 
-  toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
-  
-  
+  toSend <- list(content= questionContents, correct= correct, distractors= distractors)
   
   return(toSend)
-  
 }
 
 
@@ -218,11 +198,15 @@ getSetIntersectMC <- function(n=2, m=5, dType = 1) {
 # NOTE: the results reflect A-B where A is the first set in
 # 'source' and B is the second set in 'source'
 
-# @param    n       The number of sets to consider
-# @param    m       The number of elements in each set. 
-# @response json    A json object containing the
-#                   sets, correct, and incorrect
-#                   answers.
+# param   numSets     The number of sets to consider
+# param   setSize     The number of elements in each set. 
+# param   dType       The desired data type for set elements
+#                     (1: Ints, 2: Real, 3: Complex, 
+#                     4: Char, 5: String, 6: Mixed)               
+#
+# return  toSend      A json-like object containing the
+#                     sets, correct, and incorrect
+#                     answers.
 
 getAsymDiffMC <- function(n=2, m=5, dType = 1) {
   
