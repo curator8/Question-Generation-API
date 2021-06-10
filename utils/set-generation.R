@@ -28,14 +28,16 @@ getInt <- function(size = 1, min = 1, max = 10000, repl= FALSE ){
     print("The size of the requested list is larger than the pool of available integers. Forcing replacement...")
     repl = TRUE
   }
-  
-    #populate the list with sampled values
+    x <- sample(min:max, size = size, replace = repl)
     for(e in (1:size)){
-      ints[[e]] <- sample(min:max, 1, replace = repl) 
+      ints[[e]] <- x[[e]]
     }
   
     return(ints)
 }
+
+x <- getInt(5, max = 10)
+print(x)
 
 #Real Number Generation
 # getReal() randomly generates real numbers
