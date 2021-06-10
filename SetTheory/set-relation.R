@@ -212,83 +212,81 @@ getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
 #                     sets, correct, and incorrect
 #                     answers.
 
-getAsymDiffMC <- function(n=2, m=5, dType = 1) {
+getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   
-  n <-2   #currently, the api only supports 2 sets. 
-  
-  sourceSets <- list()    #creating an empty list. Elements will be sets 
-  
-  #for each in a given number of sets, fill the set with ints (1:9)
-  for(e in (1:n)) {
-    sourceSets[[e]] <- sample(1:9, m, replace = F)
-  }
-  allElements <- vector()
-  
-  for(e in sourceSets) {
-    #print(e)
-    allElements <- c(allElements, e)
-  }
-  
-  answer <- set::not(sourceSets[[1]], sourceSets[[2]])
-  
-  
-  # Distractor 1 (d1) is the difference of A-B and the difference B-A
-  d1 <- c(answer, set::not(sourceSets[[2]], sourceSets[[1]]))
-
-  # Distractor 2 (d2) is the difference B-A (the correct is A-B)
-  d2 <- set::not(sourceSets[[2]], sourceSets[[1]])
-
-  # Distractor 3 (d3) is the intersection of sets A and B
-  d3 <- intersect(sourceSets[[1]], sourceSets[[2]])
-  
-  
-  wrongs <- list()
-  wrongs[[1]] <- d1
-  wrongs[[2]] <- d2
-  wrongs[[3]] <- d3
-  
-  
-  # in the case that the source sets match, distractor answers would be empty as well as the correct answer.
-  # this just fills those empty answers with randomly generated sets. 
-  
-  #TODO: 3/21/21 TJS. It's not very elegant. Maybe we offer
-  # only 2 answer choices in this case. Front end would need to handle display issues though. 
-  for(e in wrongs) {
-    if(e == "[]"){
-      e <- sample(1:9, m, replace = F)
-    }
-  }
-  
-
-  #format wrong answers as strings
-  counter <- 1
-  for (w in wrongs){
-    current <- formatListAsSet(w)
-    wrongs[counter] <- current
-    counter <- counter + 1
-  }
-  
- #format source sets as strings
-  counter <- 1
-  for(s in sourceSets){
-    current <- formatListAsSet(s)
-    sourceSets[counter] <- current
-    counter <- counter + 1
-  }
-
-  answer <- formatListAsSet(answer)
-
-  #inserting string formatting "Let A = ...."
-  sourceSets <- insertSetQStrings(sourceSets)
-  
-  #The actual question being asked of the sets. 
   questionStr <- "Let A and B be two sets. What is A-B?"
   
-  #combining the source sets and question string.
-  sourceSets <- c(questionStr, sourceSets)
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   
-  #format answers and sources into json and return results 
-  toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
+  #creating the correct answer
+  correct <- not(sourceSets[[1]], sourceSets[[2]])
+  if(length(correct) > 0){
+    correct <- formatListAsSet(correct) #format for output
+  } else {
+    correct <- "\\$\\emptyset\\$"
+  }
+
+  
+  
+  #Create the distractors
+  distractors <- vector(mode="list", length = 3)
+  
+  #add distractors to the list. 
+  for(i in (1:3)){
+    currentDist <- correct
+    
+    if(i == 1){ #empty set or set intersect
+      if(currentDist == "\\$\\emptyset\\$"){
+        currentDist <- intersect(sourceSets[[1]], sourceSets[[2]])
+        currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+        
+      } else {
+        currentDist <- "\\$\\emptyset\\$"
+      }
+    }
+    else if(i ==2){ #add an element
+      currentDist <- not(sourceSets[[1]], sourceSets[[2]])
+      currentDist <- list(c(currentDist, getValue(x=dType)))
+      currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+      
+    }
+    else if(i == 3){ #remove an element
+      currentDist <- not(sourceSets[[1]], sourceSets[[2]])
+      if(length(currentDist > 1)){
+        currentDist <- list(currentDist[-1])
+      }else { #add an element
+        currentDist <- list(c(currentDist, getValue(x=dType)))
+      }
+      currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    }
+    
+    #Note the single brackets '[1]' here 
+    distractors[i] <- currentDist
+  }
+  
+  
+  #now we format the sourceSets for output. We waited to do this so we could use
+  # the sourceSets for distractor generation.
+  
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  counter <- 1
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+  
+  #format the the sourceSets as Question Strings
+  # "A = {...}"
+  # "B = {...}"
+  sourceSets <- insertSetQStrings(sourceSets)
+  
+  # now we concatenate the question contents together
+  questionContents <- c(questionStr, sourceSets)
+  
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
+  
   
   
   return(toSend)
