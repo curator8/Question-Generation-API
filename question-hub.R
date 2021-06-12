@@ -58,13 +58,13 @@ getSetIntersect <- function(qType = 1, qDifficulty = 1, dataType = 1) {
 }
 
 #* @post /getAsymDiff
-getAsymDiff <- function(qType = 1, qDifficulty = 1) {
+getAsymDiff <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   qTopic <- "asymecticDifference"
   qFormat <- "1"
   output <- "If you're seeing this message, question generation isn't working properly."
   
   if(qType == 1){
-    question <- getAsymDiffMC()
+    question <- getAsymDiffMC(dType = dataType)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
   
