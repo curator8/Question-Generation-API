@@ -293,175 +293,187 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   
 }
 
-# getSetCompliment() generates and prepares n sets of m integers 
+# getSetCompliment() generates and prepares n sets of m members 
 # as well as 3 "distractors" and 1 correct answer.
-# The correct answer relfects the compliment of the n sets against the
-# set that ranges from 0 to 20.
+# The correct answer reflects the compliment of the n sets against the
+# universal set.
 # 
 #
 #
-# @param  n        The number of sets to consider
-# @param  m        The number of elements in each set. 
-# @response json   A json object containing the
-#                   sets, correct, and incorrect
-#                   answers.
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
 #
-getSetComplementMC <- function(n=1, m = 5, dType = 1) {
+getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1) {
   
-  sourceSet <- list()    #creating an empty list.  
-  universalSet <- list(1,2,3,4,5,6,7,8,9) #universal set
+  questionText <- "Let A be a set and B be the universal set. What is the complement of set A?"
   
-  #for each in set 1, fill the set with ints (1:9)
-  sourceSet <- sample(1:9, m, replace = F)
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  sourceSets[[1]] <- sourceSets[[2]]
+  length(sourceSets[[1]]) <- 5
   
-  allElements <- vector()
+  correct <- not(sourceSets[[2]], sourceSets[[1]])
+  d1 <- correct
+  d2 <- correct
+  correct <- formatListAsSet(correct)
   
-  print(sourceSet)
-  answer <- not(sourceSet, universalSet)
+  
+  
+  distractors <- vector(mode="list", length = 3)
   
   #distractor 1 is the intersection of the sets which is the wrong answer
-  d1 <- intersect(sourceSet, universalSet)
+  d1 <- replace(d1, length(d1) - 2, getValue(x = dType, min = 1, max = 20, cat = 6)) 
   
   #distractor 2 is the intersection and the complement together which is wrong
-  d2 <- universalSet
+  d2 <- replace(d2, length(d2), getValue(x = dType, min = 1, max = 20, cat = 6))
   
   #distractor 3 is the original set which is not the complement and is wrong
-  d3 <- sourceSet
+  d3 <- sourceSets[[1]]
   
-  wrongs <- list()
-  wrongs[[1]] <- d1
-  wrongs[[2]] <- d2
-  wrongs[[3]] <- d3
+  distractors[[1]] <- formatListAsSet(d1)
+  distractors[[2]] <- formatListAsSet(d2)
+  distractors[[3]] <- formatListAsSet(d3)
   
-  #format wrong answers as strings
+  
+  
+  #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
-  for (w in wrongs){
-    current <- formatListAsSet(w)
-    wrongs[counter] <- current
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
   
-  #format source set as string
-  current <- formatListAsSet(sourceSet)
-  
-  
-  answer <- formatListAsSet(answer)
-  
-  #inserting string formatting "Let A = ...."
-  sourceSet <- insertSetQStrings(sourceSet)
-  
-  #The actual question being asked of the sets. 
-  questionStr <- "Let A be a single set. What is the complement of set A?"
-  
-  #combining the source sets and question string.
-  sourceSet <- c(questionStr, sourceSet)
-  
-  #format answers and sources into json and return results 
-  toSend <- list(content= sourceSet, correct= answer, distractors= wrongs)
-  
-  
-  return(toSend)
-  
-}
-
-getSetEqualityMC <- function(n=2, m = 5, dType = 1) {
-  n <-2   #currently, the api only supports 2 sets. 
-  
-  sourceSets <- list()    #creating an empty list. Elements will be sets 
-  
-  #for each in a given number of sets, fill the set with ints (1:9)
-  for(e in (1:n)) {
-    sourceSets[[e]] <- sample(1:9, m, replace = F)
-  }
-  allElements <- vector()
-  
-  for(e in sourceSets) {
-    print(e)
-    allElements <- c(allElements, e)
-  }
-  
-  #using setdiff function from library
-  differences <- setdiff(sourceSets[[1]], sourceSets[[2]])
-  
-  if(length(differences) > 0) {
-    answer <- "Not Equal"
-    wrong <- "Equal"
-  }
-  else {
-    answer <- "Equal"
-    wrong <- "Not Equal"
-  }
-  
-  answer <- formatListAsSet(answer)
-  
-  #inserting string formatting "Let A = ...."
+  #format the the sourceSets as Question Strings
+  # "A = {...}"
+  # "B = {...}"
   sourceSets <- insertSetQStrings(sourceSets)
   
-  #The actual question being asked of the sets. 
-  questionStr <- "Let A and B be two sets. Are A and B equal?"
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
   
-  #combining the source sets and question string.
-  sourceSets <- c(questionStr, sourceSets)
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
   
-  #format answers and sources into json and return results 
-  toSend <- list(content= sourceSets, correct= answer, distractors= wrongs)
-  
-  
+  #return question info
   return(toSend)
 }
 
-getSetCardinalityMC <- function(n=1, m = 5, dType = 1) {
-  n <- 1 
-  m <- sample(1:9, 1)
-  sourceSet <- list() #creates an empty list
   
-  sourceSet <- sample(1:9, m, replace = F)
+# getSetEquality() generates and prepares 2 sets of m members 
+# as well as 1 "distractor" and 1 correct answer.
+# The correct answer is a string which states whether the sets are equal
+# or not.
+#
+#
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
+#
+
+getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1) {
+  questionText <- "Let A and B be two sets. Are A and B equal?"
   
-  allElements <- vector()
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   
-  print(sourceSet)
-  
-  #using cardinality operation from nsprcomp library
-  answer <- cardinality(sourceSet)
-  
-  d1 <- cardinality(sourceSet) - 1
-  
-  d2 <- cardinality(sourceSet) + 1
-  
-  d3 <- 0
-  
-  wrongs <- list()
-  wrongs[[1]] <- d1
-  wrongs[[2]] <- d2
-  wrongs[[3]] <- d3
-  
-  #format wrong answers as strings
+  #sets 50/50 probability of generated sets being equal or not.
+  probability = sample(1:2, 1, replace = FALSE)
+  if (probability == 1) {
+    #makes 2nd set equal to first and formats correct and incorrect answers.
+    sourceSets[[2]] <- sourceSets[[1]]
+    correct <- "Equal" #format for output
+    distractors <- "Not Equal"
+  }
+  if (probability == 2) {
+    #makes 2nd set equal to first except for one replaced member, and formats answers.
+    sourceSets[[2]] <- sourceSets[[1]]
+    sourceSets[[2]] <- replace(sourceSets[[2]], 
+    length(sourceSets[[2]]) - sample(1:4, 1, replace = FALSE), 
+    getValue(x = dType, min = 1, max = 20, cat = 6))
+    correct <- "Not Equal"
+    distractors <- "Equal"
+    
+  }
+  #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
-  for (w in wrongs){
-    current <- formatListAsSet(w)
-    wrongs[counter] <- current
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+  #format the the sourceSets as Question Strings
+  # "A = {...}"
+  # "B = {...}"
+  sourceSets <- insertSetQStrings(sourceSets)
+  
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
+  
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
+  
+  #return question info
+  return(toSend)
+}
+
+# getSetCardinality() generates and prepares 1 set of a random number of 
+# members between 1 and 9, as well as 3 "distractors" and 1 correct answer.
+# The correct answer is a string which states the correct cardinality
+# of the generated set.
+#
+#
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
+#
+getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = FALSE), dType = 1) {
+  #define the text of the question
+  questionText <-('Let A be a set. What is the cardinality of set A?')
+  cardinality <- sample(5:9, 1, replace = FALSE)
+  #generate and fill sets
+  sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+  
+  
+  #creating the correct answer
+  #NOTE: this will change based on the desired algorithm,
+  #       but the answer should be stored as a list
+  # 
+  # Here, the union is used as an example
+  correct <- lengths(sourceSet) 
+  
+  distractors <- vector(mode="list", length = 3)
+  
+  distractors[[1]] <- lengths(sourceSet) - 1
+  
+  distractors[[2]] <- lengths(sourceSet) + 1
+  
+  distractors[[3]] <- lengths(sourceSet) + 5
+  
+  
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  counter <- 1
+  for (s in sourceSet){
+    sourceSet[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
   
-  #format source set as string
-  current <- formatListAsSet(sourceSet)
+  #format the the sourceSet as Question Strings
+  # "A = {...}"
+  sourceSets <- insertSetRStrings(sourceSet)
   
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSet)
   
-  answer <- formatListAsSet(answer)
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
   
-  #inserting string formatting "Let A = ...."
-  sourceSet <- insertSetQStrings(sourceSet)
-  
-  #The actual question being asked of the sets. 
-  questionStr <- "Let A be a single set. What is the cardinality of set A?"
-  
-  #combining the source sets and question string.
-  sourceSet <- c(questionStr, sourceSet)
-  
-  #format answers and sources into json and return results 
-  toSend <- list(content= sourceSet, correct= answer, distractors= wrongs)
-  
-  
+  #return question info
   return(toSend)
 }
   

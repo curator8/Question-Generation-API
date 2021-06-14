@@ -34,3 +34,10 @@ insertSetQStrings <- function(sets) {
 
     return(nsets)
 }
+
+insertSetRStrings <- function(sets) {
+    nsets <- list()
+    nsets[1] <- paste('\\$A=\\$', sets[1])
+    
+    return(nsets)
+}
