@@ -73,7 +73,7 @@ getAsymDiff <- function(qType = 1, qDifficulty = 1, dataType = 1) {
 
 #* @post /getSetComplement
 #* @param qType   The data type.
-getSetComplement <- function(qType = 1, qDifficulty = 1) {
+getSetComplement <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   qTopic <- "SetComplement"
   qFormat <- "1"
   #Error Message
@@ -83,7 +83,7 @@ getSetComplement <- function(qType = 1, qDifficulty = 1) {
   
   #checks for question type, calls function, and formats output
   if (qType == 1) {
-    question <- getSetComplementMC()
+    question <- getSetComplementMC(dType = dataType)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
   
@@ -91,7 +91,7 @@ getSetComplement <- function(qType = 1, qDifficulty = 1) {
 }
 
 #* @post /getSetEquality
-getSetEquality <- function(qType = 1, qDifficulty = 1) {
+getSetEquality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   qTopic <- "SetEquality"
   qFormat <- "1"
   #Error Message
@@ -101,14 +101,16 @@ getSetEquality <- function(qType = 1, qDifficulty = 1) {
   
   #checks for question type, calls function, and formats output
   if (qType == 1) {
-    question <- getSetEqualityMC()
+    question <- getSetEqualityMC(dType = dataType)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
     
   }
   
   return(output)
 }
-getSetCardinality <- function(qType = 1, qDifficulty = 1) {
+
+#* @post /getSetCardinality
+getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   qTopic <- "SetCardinality"
   qFormat <- "1"
   #Error Message
@@ -118,7 +120,7 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1) {
   
   #checks for question type, calls function, and formats output
   if (qType == 1) {
-    question <- getSetCardinalityMC()
+    question <- getSetCardinalityMC(dType = dataType)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
     
   }
