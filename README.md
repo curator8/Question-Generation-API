@@ -11,20 +11,20 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   </ul>
 
 
-  <h5>Endpoints in Detail</h5>
+  <h2>Endpoints in Detail</h2>
 
   <h4>/getSetUnion(m,n) </h4>
   <p> @param   n     The number of sets to be joined. Default value = 2 </p>
   <p> @param   m     The number of elements in each set. Default value = 5 </p>
   <p> @returns       A Set Union multiple choice problem in the form of a JSON Object. The returned JSON object adheres to the following structure: </p>
-  
+
   `{source: ["Question Text", sets that need to be joined],` <br>
     `answer: [The correct results of the union of the source sets],`<br>
     `wrongs: [[discractor answer 1],` <br>
              `[distractor answer 2],` <br>
              `[distractor answer 3]]` <br>
   `}`
-        
+
   
   Consider the following expample output:
   

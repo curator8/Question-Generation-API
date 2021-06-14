@@ -227,8 +227,6 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
     correct <- "\\$\\emptyset\\$"
   }
 
-  
-  
   #Create the distractors
   distractors <- vector(mode="list", length = 3)
   
@@ -287,8 +285,6 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   #add all items to a list for return
   toSend <- list(content = questionContents, correct = correct, distractors = distractors)
   
-  
-  
   return(toSend)
   
 }
@@ -313,6 +309,8 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1) {
   #generate and fill sets
   sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   sourceSets[[1]] <- sourceSets[[2]]
+  #scramble Universal set
+  sourceSets[[2]] <- sample(sourceSets[[2]], length(sourceSets[[2]]), replace  = FALSE)
   length(sourceSets[[1]]) <- 5
   
   correct <- not(sourceSets[[2]], sourceSets[[1]])
