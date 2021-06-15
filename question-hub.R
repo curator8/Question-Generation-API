@@ -130,7 +130,7 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   return(output)
 }
 
-#* @get  /imageQuestion
+#* @post  /imageQuestion
 imageQuestion <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   qTopic <- "SetExpressions"
   qFormat<- "2"
