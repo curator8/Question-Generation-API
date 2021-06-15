@@ -4,6 +4,8 @@
 
 library(plumber)
 source("SetTheory/set-relation.R")
+source("venn/venn-gen.R") #for testing image transport
+
 
 
 #this file acts as a routing hub to fetch questions for use in the ISPeL system.
@@ -128,4 +130,21 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   return(output)
 }
 
-
+#* @get  /imageQuestion
+imageQuestion <- function(qType = 1, qDifficulty = 1, dataType = 1) {
+  qTopic <- "SetExpressions"
+  qFormat<- "2"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSetProblem()
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+    
+  }
+  
+  return(output)
+}
