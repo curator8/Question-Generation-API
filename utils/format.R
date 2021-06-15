@@ -34,3 +34,15 @@ insertSetQStrings <- function(sets) {
 
     return(nsets)
 }
+
+# insertSetRStrings takes a single set and appends strings to the set
+#  such that the final list is as follows:
+# 
+#  'Let \\; A=' [a set of numbers]
+#  'be \\; a \\; set.'
+insertSetRStrings <- function(sets) {
+    nsets <- list()
+    nsets[1] <- paste('\\$A=\\$', sets[1])
+    
+    return(nsets)
+}

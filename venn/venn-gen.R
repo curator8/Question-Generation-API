@@ -95,9 +95,9 @@ encodeDiagram <- function(diag) {
 
 #getSetProblem() returns a json object containing a base64 encoded png
 #of a set relation and a string with the correct set relation definition.
-#* @param n number of sets in the diagram
-#* @response serializer pngssin
-#* @get  /getSetProblem
+# @param n number of sets in the diagram
+# @response serializer pngssin
+# @get  /getSetProblem
 getSetProblem <- function(n=2) {
   solution <-getSetRelation(2)
   print("called function")
@@ -142,7 +142,7 @@ getSetProblem <- function(n=2) {
     if(wrongs[[2]] == wrongs[[3]]){
       while(wrongs[[2]] == wrongs[[3]]){
         wrongs[[3]] <= getSetRelation()
-      }
+      }     
     }
     
     if(wrongs[[1]] == wrongs[[3]]){
