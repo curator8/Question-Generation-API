@@ -8,6 +8,9 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   <li>/getSetUnion</li>
   <li>/getSetIntersect</li>
   <li>/getAsymDiff</li>
+  <li>/getSetComplement</li>
+  <li>/getSetEquality<li>
+  <li>/getSetCardinality<li>
   </ul>
 
 
