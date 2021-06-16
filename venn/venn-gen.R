@@ -97,7 +97,7 @@ encodeDiagram <- function(diag) {
 #of a set relation and a string with the correct set relation definition.
 # @param n number of sets in the diagram
 # @response serializer pngssin
-# @get  /getSetProblem
+# *@get  /getSetProblem
 getSetProblem <- function(n=2) {
   solution <-getSetRelation(2)
   print("called function")
@@ -106,8 +106,9 @@ getSetProblem <- function(n=2) {
   venn(solution, snames = "A, B",sncs = 4)  #this is the line that actually draws the plot in the buffer. 
   dev.off()  #saves the above plot to disk
 
-  encodedDiag <- encodeDiagram("set_diag_tmp.png")
-  pngData <- data.frame(solution, encodedDiag)
+  encodedDiag <- list(encodeDiagram("set_diag_tmp.png"))
+  #pngData <- data.frame(solution, encodedDiag)   #why?
+  
   
   
   #distractor Generation
@@ -152,15 +153,15 @@ getSetProblem <- function(n=2) {
     }
   }
   
-  toSend <- list(source= pngData, answer= solution, wrongs= wrongs)
+  questionText <- "This is sample question text"
   
-  jsonToSend <- toJSON(toSend, pretty = TRUE)
+  content <- c(questionText, encodedDiag)
   
+  toSend <- list(content= content, correct= solution, distractors= wrongs)
   
-  
-  return(jsonToSend)
+
+
+  return(toSend)
   
 }
-
-
 
