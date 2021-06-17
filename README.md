@@ -144,3 +144,17 @@ The return is as follows:
   @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
                                        4: Char, 5: String, 6: Mixed) 
 ```
+
+ <h4>/setExpressions(qType, qDifficulty) </h4>
+  
+  Topic:  `setExpressions`
+
+  <h5>Parameters</h5>  
+```
+  @param    qType           Question Type ('1': Multiple Choice)
+  
+  @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
+  
+ 
+```
+

@@ -131,8 +131,8 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
 }
 
 #* @post /setExpression
-setExpressionQ <- function(qType = 1, qDifficulty = 1, dataType = 1) {
- qTopic <- "setExpressions2"
+setExpressionQ <- function(qType = 1, qDifficulty = 1) {
+ qTopic <- "setExpressions"
  qFormat <- 2
  #Error Message
  output <- "If you're seeing this message, question generation isn't working properly."
