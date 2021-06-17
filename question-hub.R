@@ -4,7 +4,7 @@
 
 library(plumber)
 source("SetTheory/set-relation.R")
-source("venn/venn-gen.R") #for testing image transport
+ source("venn/venn-gen2.R") #new cleaner test for image transport. answers are diagrams
 
 
 
@@ -130,21 +130,23 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   return(output)
 }
 
-#* @post  /imageQuestion
-imageQuestion <- function(qType = 1, qDifficulty = 1, dataType = 1) {
-  qTopic <- "setExpressions"
-  qFormat<- "2"
-  #Error Message
-  output <- "If you're seeing this message, question generation isn't working properly."
+#* @post /setExpression
+setExpressionQ <- function(qType = 1, qDifficulty = 1, dataType = 1) {
+ qTopic <- "setExpressions2"
+ qFormat <- 2
+ #Error Message
+ output <- "If you're seeing this message, question generation isn't working properly."
+ 
+ question <- list()
   
-  question <- list()
-  
-  #checks for question type, calls function, and formats output
-  if (qType == 1) {
-    question <- getSetProblem()
-    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
-    
-  }
-  
-  return(output)
-}
+ #checks for question type, calls function, and formats output
+ if (qType == 1) {
+   question <- getSetExpressionMC()
+   output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+ }
+ return(output)
+} 
+
+
+
+
