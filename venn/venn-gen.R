@@ -100,6 +100,7 @@ encodeDiagram <- function(diag) {
 # *@get  /getSetProblem
 getSetProblem <- function(n=2) {
   solution <-getSetRelation(2)
+  print(solution)
   print("called function")
   #for conversion to base64, the png of the plot must be written to disk. (as far as I can tell)
   png(file="set_diag_tmp.png")
@@ -164,4 +165,4 @@ getSetProblem <- function(n=2) {
   return(toSend)
   
 }
-
+x <- getSetProblem()

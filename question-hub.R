@@ -1,10 +1,10 @@
-# Author:         Trevor Strobel
+# Authors:         Trevor Strobel
 # File:           question-hub.R
 # Date:           4/11/2021
 
 library(plumber)
 source("SetTheory/set-relation.R")
-source("venn/venn-gen.R") #for testing image transport
+ source("venn/venn-gen2.R") #new cleaner test for image transport. answers are diagrams
 
 
 
@@ -76,7 +76,7 @@ getAsymDiff <- function(qType = 1, qDifficulty = 1, dataType = 1) {
 #* @post /getSetComplement
 #* @param qType   The data type.
 getSetComplement <- function(qType = 1, qDifficulty = 1, dataType = 1) {
-  qTopic <- "SetComplement"
+  qTopic <- "setComplement"
   qFormat <- "1"
   #Error Message
   output <- "If you're seeing this message, question generation isn't working properly."
@@ -94,7 +94,7 @@ getSetComplement <- function(qType = 1, qDifficulty = 1, dataType = 1) {
 
 #* @post /getSetEquality
 getSetEquality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
-  qTopic <- "SetEquality"
+  qTopic <- "setEquality"
   qFormat <- "1"
   #Error Message
   output <- "If you're seeing this message, question generation isn't working properly."
@@ -113,7 +113,7 @@ getSetEquality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
 
 #* @post /getSetCardinality
 getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
-  qTopic <- "SetCardinality"
+  qTopic <- "setCardinality"
   qFormat <- "1"
   #Error Message
   output <- "If you're seeing this message, question generation isn't working properly."
@@ -130,21 +130,23 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   return(output)
 }
 
-#* @post  /imageQuestion
-imageQuestion <- function(qType = 1, qDifficulty = 1, dataType = 1) {
-  qTopic <- "SetExpressions"
-  qFormat<- "2"
-  #Error Message
-  output <- "If you're seeing this message, question generation isn't working properly."
+#* @post /setExpression
+setExpressionQ <- function(qType = 1, qDifficulty = 1) {
+ qTopic <- "setExpressions"
+ qFormat <- 2
+ #Error Message
+ output <- "If you're seeing this message, question generation isn't working properly."
+ 
+ question <- list()
   
-  question <- list()
-  
-  #checks for question type, calls function, and formats output
-  if (qType == 1) {
-    question <- getSetProblem()
-    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
-    
-  }
-  
-  return(output)
-}
+ #checks for question type, calls function, and formats output
+ if (qType == 1) {
+   question <- getSetExpressionMC()
+   output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+ }
+ return(output)
+} 
+
+
+
+
