@@ -29,7 +29,9 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
                                        4: Char, 5: String, 6: Mixed) 
 ```
+
 The return is as follows:
+
 ```
   {
   "topic": [
