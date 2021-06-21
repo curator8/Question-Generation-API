@@ -5,7 +5,6 @@
 library(set)
 library(nsprcomp)
 
-
 source("utils/format.R") #set string formatting
 source("utils/set-generation.R") #set generation
 
@@ -438,13 +437,10 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   sourceSet <- getSets(n = numSets, m = setSize, x = dType)
   
   
-  #creating the correct answer
-  #NOTE: this will change based on the desired algorithm,
-  #       but the answer should be stored as a list
-  # 
-  # Here, the union is used as an example
+  #creating the correct answer based on length of SourceSet
   correct <- lengths(sourceSet) 
   
+  #Creating distractors based on correct answer.
   distractors <- vector(mode="list", length = 3)
   
   distractors[[1]] <- lengths(sourceSet) - 1
@@ -475,5 +471,109 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   return(toSend)
 }
   
-
+getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
+  
+  #define the text of the question
+  questionText <-('Let A be a set. Which answer represents an incorrect set partition of set A?')
+  
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  
+  #scrambling the sets to be used for both the correct and distractor partitions.
+  initial <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
+  d1FirstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
+  d2FirstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
+  d3FirstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
+  
+  # Creating empty lists for both the correct and three distractor answers which will
+  # be filled with the generated partitions.
+  d1 <- list()
+  d2 <- list()
+  d3 <- list()
+  correct <- list()
+  
+  # Creating a probability variable which will cause the correct answer to be 
+  # generated with one of three different partitions for question variety.
+  # Setting length of initial variable creates the first partition.
+  probability <- sample(1:3, 1, replace = FALSE)
+  if (probability == 1) {
+    length(initial) <- 3
+  }
+  else if (probability == 2) {
+    length(initial) <- 2
+  }
+  else {
+    length(initial) <- 0
+  }
+  
+  # Then creates the second partition with the remaining members from the source.
+  secondSet <- not(sourceSets[[1]], initial)
+  
+  # Replaces one member of the first partition with a random member, thus making
+  # the partitioning incorrect and generating the correct answer choice.
+  initial <- replace(initial, length(initial) - sample(0:2, 1, replace = FALSE),
+  getValue(x = dType, min = 1, max = 20))
+  
+  # Formats each inner partition as a set and concatenates each set
+  # within the larger list. Then formats the larger list as a set.
+  initial <- formatListAsSet(initial)
+  secondSet <- formatListAsSet(secondSet)
+  correct <- c(correct, initial)
+  correct <- c(correct, secondSet)
+  correct <- formatListAsSet(correct)
+  
+  distractors <- vector(mode="list", length = 3)
+  
+  # For each of the three distractors, 
+  # begin by setting varying lengths of first partition. 
+  length(d1FirstSet) <- 4
+  
+  # then finding remaining members and formatting both partitions as sets.
+  d1SecondSet <- not(sourceSets[[1]], d1FirstSet)
+  d1FirstSet <- formatListAsSet(d1FirstSet)
+  d1SecondSet <- formatListAsSet(d1SecondSet)
+  
+  # and concatenating both sets inside larger empty list.
+  d1 <- c(d1, d1FirstSet)
+  d1 <- c(d1, d1SecondSet)
+  
+  length(d2FirstSet) <- 3
+  d2SecondSet <- not(sourceSets[[1]], d2FirstSet)
+  d2FirstSet <- formatListAsSet(d2FirstSet)
+  d2SecondSet <- formatListAsSet(d2SecondSet)
+  d2 <- c(d2, d2FirstSet)
+  d2 <- c(d2, d2SecondSet)
+  
+  length(d3FirstSet) <- 2
+  d3SecondSet <- not(sourceSets[[1]], d3FirstSet)
+  d3FirstSet <- formatListAsSet(d3FirstSet)
+  d3SecondSet <- formatListAsSet(d3SecondSet)
+  d3 <- c(d3, d3FirstSet)
+  d3 <- c(d3, d3SecondSet)
+  
+  #Formatting larger distractor lists as sets.
+  distractors[[1]] <- formatListAsSet(d1)
+  distractors[[2]] <- formatListAsSet(d2)
+  distractors[[3]] <- formatListAsSet(d3)
+  
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  counter <- 1
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+  
+  #format the the sourceSet as Question Strings
+  # "A = {...}"
+  sourceSets <- insertSetRStrings(sourceSets)
+  
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
+  
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
+  
+  #return question info
+  return(toSend)
+}
 

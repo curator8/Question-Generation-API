@@ -4,7 +4,7 @@
 
 library(plumber)
 source("SetTheory/set-relation.R")
- source("venn/venn-gen2.R") #new cleaner test for image transport. answers are diagrams
+source("venn/venn-gen2.R") #new cleaner test for image transport. answers are diagrams
 
 
 
@@ -130,22 +130,44 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   return(output)
 }
 
+#* @post /getSetPartitions
+getSetPartitions <- function(qType = 1, qDifficulty = 1, dataType = 1) {
+  qTopic <- "SetPartitions"
+  qFormat <- "1"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSetPartitionsMC(dType = dataType)
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+  
+  }
+  
+  return(output)
+}
+
 #* @post /setExpression
 setExpressionQ <- function(qType = 1, qDifficulty = 1) {
- qTopic <- "setExpressions"
- qFormat <- 2
- #Error Message
- output <- "If you're seeing this message, question generation isn't working properly."
- 
- question <- list()
+  qTopic <- "setExpressions"
+  qFormat <- 2
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
   
- #checks for question type, calls function, and formats output
- if (qType == 1) {
-   question <- getSetExpressionMC()
-   output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
- }
- return(output)
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSetExpressionMC()
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+  }
+  return(output)
 } 
+
+
+
 
 
 
