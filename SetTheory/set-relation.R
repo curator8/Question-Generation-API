@@ -3,10 +3,7 @@
 
 
 library(set)
-library(sets)
 library(nsprcomp)
-library(plyr)
-library(partitions)
 
 source("utils/format.R") #set string formatting
 source("utils/set-generation.R") #set generation
@@ -440,12 +437,10 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   sourceSet <- getSets(n = numSets, m = setSize, x = dType)
   
   
-  #creating the correct answer
-  #NOTE: this will change based on the desired algorithm,
-  #       but the answer should be stored as a list
-  # 
+  #creating the correct answer based on length of SourceSet
   correct <- lengths(sourceSet) 
   
+  #Creating distractors based on correct answer.
   distractors <- vector(mode="list", length = 3)
   
   distractors[[1]] <- lengths(sourceSet) - 1
