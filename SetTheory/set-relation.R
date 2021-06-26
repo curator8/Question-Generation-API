@@ -579,3 +579,271 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   return(toSend)
 }
 
+
+# powerSetQA() generates and prepares 1 set of a random number of 
+# members between 1 and 9, as well as 3 "distractors" and 1 correct answer.
+# The correct answer is a string which states the correct cardinality
+# of the generated set.
+#   @param      numSets         The number of sets to consider in the question
+#   @param      setSize         The length of the source sets.
+#   @param      dType           The desired data type for set elements
+#                               (1: Ints, 2: Real, 3: Complex, 
+#                               4: Char, 5: String, 6: Mixed)  
+#
+#   @return     toSend          A json-like object containing the
+#                               source sets, correct, and 
+#                               distractors (incorrect answers)
+#
+powerSetQA <- function(numSets = 1, setSize = 3, dType = 1) {
+  
+  questionText <-('What is the power set of A?')
+  
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  
+  
+  
+  #convert the set into a vector to manipulate better. 
+  sourceSetsVector <- unlist(sourceSets)
+  #how the power set is gotten (uses the 'sets' package).
+  correct <- 2^as.set(sourceSetsVector)
+  #converts power set back to a string to format. 
+  correct <- toString(correct, width = NULL) 
+  #uses the formatListAsSet function to format the string located in "utils/format.R".
+  correct <- formatListAsSet(correct[[1]])
+  
+  
+  
+  
+  #formats the power set string correctly.
+  correct <- str_replace_all(correct, c("list" = ""))
+  correct <- str_replace_all(correct, c("\\(" = "\\\\{"))
+  correct <- str_replace_all(correct, c("\\)" = "\\\\}"))
+  correct <- str_replace_all(correct, c("\"" = ""))
+  
+  
+  
+  
+  
+  #Create a vector that will hold distractors
+  #NOTE: we declare the list with vector() here so that 
+  # we can also declare a length. This prevents R from
+  # copying the list every time we add an element
+  distractors <- vector(mode="list", length = 3)
+  
+  #add distractors to the list. 
+  # each element of the list should be a set
+  # represented as a list.
+  for(i in (1:3)){
+    #generate a set using getSets function. 
+    currentDist <- (getSets(n = 1, m = setSize, x = dType))
+    #makes the list into a vector to better manipulate 
+    currentDist <- unlist(currentDist)
+    #gets the power set of the vector. 
+    currentDist <- 2^as.set(currentDist)
+    #converts the power set into a string.
+    currentDist <- toString(currentDist, width = NULL) 
+    #formats the power set. 
+    currentDist <- formatListAsSet(currentDist[[1]])    #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    #formats the power set string correctly. 
+    currentDist <- str_replace_all(currentDist, c("list" = ""))
+    currentDist <- str_replace_all(currentDist, c("\\(" = "\\\\{"))
+    currentDist <- str_replace_all(currentDist, c("\\)" = "\\\\}"))
+    currentDist <- str_replace_all(currentDist, c('\"' = ""))
+    
+    
+    #Note the single brackets '[1]' here 
+    distractors[i] <- currentDist
+  }
+  
+  
+  #now we format the sourceSets for output. We waited to do this so we could use
+  # the sourceSets for distractor generation.
+  
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  #COpy a
+  
+  counter <- 1
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+  
+  sourceSets <- str_replace_all(sourceSets, c("list" = ""))
+  sourceSets <- str_replace_all(sourceSets, c("\\(" = ""))
+  sourceSets <- str_replace_all(sourceSets, c("\\)" = ""))
+  sourceSets <- str_replace_all(sourceSets, c("\"" = ""))
+  
+  #format the the sourceSets as Question String.
+  # "A = {...}"
+  sourceSets <- insertSetRStrings(sourceSets)
+  
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
+  
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
+  
+  return(toSend)
+  
+}
+
+
+#cartesianProduct() generates and prepares 2 set of a random number of 
+#   @param      numSets         The number of sets to consider in the question
+#   @param      setSize         The length of the source sets.
+#   @param      dType           The desired data type for set elements
+#                               (1: Ints, 2: Real, 3: Complex, 
+#                               4: Char, 5: String, 6: Mixed)  
+#
+#   @return     toSend          A json-like object containing the
+#                               source sets, correct, and 
+#                               distractors (incorrect answers)
+#  
+cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1) {
+  
+  questionText <-('Let A and B be two sets. What is \\$A\\times B\\$?')
+  
+  
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  
+  
+  #convert each set into a vector to manipulate better
+  for(i in (1:2)){
+    sourceSets[[i]] <- unlist(sourceSets[[i]])
+  }
+  
+  
+  #finds the correct length/cardinality of the cartesian product set.
+  setOneLength = length(sourceSets[[1]])
+  setTwoLength = length(sourceSets[[2]])
+  cartesianProductCardinality = setOneLength * setTwoLength 
+  
+  
+  
+  #creates a list to store the pairs when the cartesian product is calculated
+  cartesianSet <- list()
+  #merge two sets to get a matrix.  
+  cartesianSet.df <- merge(sourceSets[[1]], sourceSets[[2]])
+  #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+  for(e in (1:cartesianProductCardinality)) {
+    cartesianSet[[e]] <- as.vector(cartesianSet.df[e, ])
+    
+  }
+  #makes the cartesesian set into a string
+  correct <- toString(cartesianSet, width = NULL) 
+  #uses the formatListAsSet function to format the string located in "utils/format.R".
+  correct <- formatListAsSet(correct[[1]])
+  
+  
+  
+  
+  
+  
+  
+  #Create a vector that will hold distractors
+  #NOTE: we declare the list with vector() here so that 
+  # we can also declare a length. This prevents R from
+  # copying the list every time we add an element
+  distractors <- vector(mode="list", length = 3)
+  
+  # add distractors to the list. 
+  # each element of the list should be a set
+  # represented as a list.
+  for(i in (1:3)){
+    
+    #set generation for Cartesian product. 
+    set1 <- (getSets(n = 1, m = (setSize), x = dType))
+    set2 <- (getSets(n = 1, m = (setSize), x = dType))
+    
+    #changes list to vector to better manipulate.
+    set1 <- unlist(set1)
+    set2 <- unlist(set2)
+    
+    #gets length for each set. 
+    set1Length = length(set1)
+    set2Length = length(set2)
+    
+    #gets length for Cartesian product. 
+    cartesianDistractorCardinality = set1Length * set2Length
+    
+    
+    #creates a list to store pairs of Cartesian product. 
+    cartesianDistractor <- list()
+    
+    #merge two sets to get a matrix.  
+    cartesianDistractors.df <- merge(set1, set2)
+    
+    #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+    for(e in (1:cartesianDistractorCardinality)) {
+      cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+    }
+    
+    
+    #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
+    currentDist <- cartesianDistractor
+    currentDist <- formatListAsSet(currentDist)  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    
+    
+    #Note the single brackets '[1]' here 
+    distractors[i] <- currentDist
+  }
+  
+  
+  #formats the "distractor" cartesian product string correctly.
+  for(i in (1:3)) {
+    temporarySet <- distractors[[i]]
+    temporarySet <- str_replace_all(temporarySet, c("list" = ""))
+    temporarySet <- str_replace_all(temporarySet, c(":" = ", "))
+    temporarySet <- str_replace_all(temporarySet, c("x = " = ""))
+    temporarySet <- str_replace_all(temporarySet, c("y = " = ""))
+    temporarySet <- str_replace_all(temporarySet, c('\"' = ""))
+    distractors[[i]] <- temporarySet
+  }
+  
+  
+  
+  
+  
+  
+  
+  #now we format the sourceSets for output. We waited to do this so we could use
+  # the sourceSets for distractor generation.
+  
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  #COpy a
+  
+  counter <- 1
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+  
+  
+  #format the the sourceSets as Question String.
+  # "A = {...}"
+  # "B = {...}"
+  sourceSets <- insertSetQStrings(sourceSets)
+  
+  
+  #formats the "correct" cartesian product string correctly.
+  correct <- formatListAsSet(cartesianSet)
+  correct <- str_replace_all(correct,c("list" = ""))
+  correct <- str_replace_all(correct, c("x = " = ""))
+  correct <- str_replace_all(correct, c("y = " = ""))
+  correct <- str_replace_all(correct, c('\"' = ""))
+  
+  
+  
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
+  
+  #format answers and sources into json and return results 
+  toSend <- list(content= questionContents, correct= correct, distractors= distractors)
+  
+  #jsonToSend <- toJSON(toSend)
+  
+  return(toSend)
+  
+}
