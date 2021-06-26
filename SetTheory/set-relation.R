@@ -1,9 +1,11 @@
-# Author:         Trevor Strobel
+# Author:         Trevor Strobel, Joel Montano, Christopher A. Wright
 # File:           set-Relation.R
 
 
 library(set)
 library(nsprcomp)
+library(sets)
+library(purrr)
 
 source("utils/format.R") #set string formatting
 source("utils/set-generation.R") #set generation
