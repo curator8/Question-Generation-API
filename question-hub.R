@@ -1,4 +1,4 @@
-# Authors:         Trevor Strobel
+# Authors:         Trevor Strobel, Joel Montano, Christopher A. Wright
 # File:           question-hub.R
 # Date:           4/11/2021
 
@@ -166,7 +166,43 @@ setExpressionQ <- function(qType = 1, qDifficulty = 1) {
   return(output)
 } 
 
+#* @post  /powerSetQ
+powerSetQ <- function(qType = 1, qDifficulty = 1, dataType = 1) {
+  qTopic <- "PowerSet"
+  qFormat<- "1"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if(qType == 1){
+    question <- powerSetQA(dType = dataType)
+    
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+    
+  }
+  
+  return(output)
+}
 
+#* @post /cartesianProduct
+cartesianProductQA <- function(qType = 1, qDifficulty = 1, dataType = 1) {
+  qTopic <- "cartesianProduct"
+  qFormat <- "1"
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  #question details are returned as a list. 
+  question <- list()
+  
+  if(qType == 1){
+    question <- cartesianProduct(dType = dataType)
+    
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+  }
+  
+  return(output)
+}
 
 
 
