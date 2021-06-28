@@ -11,6 +11,7 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   <li>/getSetComplement</li>
   <li>/getSetEquality</li>
   <li>/getSetCardinality</li>
+  <li>/getSetPartitions</li>
   </ul>
 
 
@@ -29,7 +30,9 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
                                        4: Char, 5: String, 6: Mixed) 
 ```
+
 The return is as follows:
+
 ```
   {
   "topic": [
@@ -134,6 +137,20 @@ The return is as follows:
   <h4>/getSetCardinality(qType, qDifficulty, dataType) </h4>
   
   Topic:  `setCardinality`
+
+  <h5>Parameters</h5>  
+```
+  @param    qType           Question Type ('1': Multiple Choice)
+  
+  @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
+  
+  @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
+                                       4: Char, 5: String, 6: Mixed) 
+```
+
+<h4>/getSetPartitions(qType, qDifficulty, dataType) </h4>
+  
+  Topic:  `setPartitions`
 
   <h5>Parameters</h5>  
 ```
