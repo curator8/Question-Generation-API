@@ -472,7 +472,99 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   #return question info
   return(toSend)
 }
+
+# getSymmDiff() generates and prepares 2 sets of length 5, 
+# as well as 3 "distractors" and 1 correct answer.
+# The correct answer is a string which states the unique members of each set
+# which constitute the symmetric difference between the two sets.
+#
+#
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
+#
   
+getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1){
+  
+  #define the text of the question
+  questionText <-('Let A and B be two unique sets. What is the symmetric difference of A and B?')
+  
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  
+  #set sourceSet 2 equal to sourceSet 1 and scramble the set, then replace three members.
+  sourceSets[[2]] <- sourceSets[[1]]
+  
+  sourceSets[[2]] <- sample(sourceSets[[2]], length(sourceSets[[2]]), replace  = FALSE)
+  
+  sourceSets[[2]] <- replace(sourceSets[[2]], length(sourceSets[[2]]) - sample(0:1, 1, replace = FALSE), 
+                             getValue(x = dType, min = 21, max = 30, cat = 6))
+  sourceSets[[2]] <- replace(sourceSets[[2]], length(sourceSets[[2]]) - sample(0:1, 1, replace = FALSE), 
+                             getValue(x = dType, min = 21, max = 30, cat = 6))
+  sourceSets[[2]] <- replace(sourceSets[[2]], length(sourceSets[[2]]) - sample(0:1, 1, replace = FALSE), 
+                             getValue(x = dType, min = 21, max = 30, cat = 6))
+  
+  
+  #set correct answer as a list of values unique to both sets
+  correct <- list()
+  correct <- not(sourceSets[[1]], sourceSets[[2]])
+  correct <- append(correct, not(sourceSets[[2]], sourceSets[[1]]), after = length(correct))
+  
+  
+  #Creating distractors based on correct answer.
+  distractors <- vector(mode="list", length = 3)
+
+  distractors[[1]] <- correct
+  distractors[[1]] <- replace(distractors[[1]], length(distractors[[1]]), 
+                             getValue(x = dType, min = 1, max = 30, cat = 6))
+  distractors[[1]] <- formatListAsSet(distractors[[1]])
+  distractors[[2]] <- correct
+  distractors[[2]] <- replace(distractors[[2]], length(distractors[[2]]) - 1, 
+                             getValue(x = dType, min = 1, max = 30, cat = 6))
+  distractors[[2]] <- formatListAsSet(distractors[[2]])
+  distractors[[3]] <- correct
+  distractors[[3]] <- replace(distractors[[3]], length(distractors[[3]]) - 2, 
+                             getValue(x = dType, min = 1, max = 30, cat = 6))
+  distractors[[3]] <- formatListAsSet(distractors[[3]])
+  
+  correct <- formatListAsSet(correct)
+
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  counter <- 1
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+
+  #format the the sourceSet as Question Strings
+  # "A = {...}"
+  sourceSets <- insertSetQStrings(sourceSets)
+
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
+
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
+
+  #return question info
+  return(toSend)
+}
+  
+# getSetPartitions() generates and prepares 1 set of length 5, 
+# as well as 3 "distractors" and 1 correct answer.
+# The correct answer is the set which represents an incorrect partition
+# of the sourceSet.
+#
+#
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
+#
+
 getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   #define the text of the question
@@ -522,6 +614,7 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   secondSet <- formatListAsSet(secondSet)
   correct <- c(correct, initial)
   correct <- c(correct, secondSet)
+  correct <- str_replace_all(correct, "[\\\\$]", "")
   correct <- formatListAsSet(correct)
   
   distractors <- vector(mode="list", length = 3)
@@ -553,6 +646,9 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   d3 <- c(d3, d3FirstSet)
   d3 <- c(d3, d3SecondSet)
   
+  d1 <- str_replace_all(d1, "[\\\\$]", "")
+  d2 <- str_replace_all(d2, "[\\\\$]", "")
+  d3 <- str_replace_all(d3, "[\\\\$]", "")
   #Formatting larger distractor lists as sets.
   distractors[[1]] <- formatListAsSet(d1)
   distractors[[2]] <- formatListAsSet(d2)
