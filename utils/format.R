@@ -19,6 +19,17 @@ formatListAsSet <- function(inputList){
     return(finalResult)
 }
 
+#Function to correctly format inner sets so that there are no display issues.
+formatPartitionAsSet <- function(inputList){
+    
+    #format as string
+    result <- paste(c(inputList), collapse=', ')
+    
+    #insert prefix and postfix. escape character nonsense involved here. 
+    finalResult <- paste("\\{", result," \\}")
+    return(finalResult)
+}
+
 
 # insertSetQStrings takes a list of sets and appends strings to the list
 #  such that the final list is as follows:
