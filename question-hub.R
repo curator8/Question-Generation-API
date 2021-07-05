@@ -122,7 +122,7 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   
   #checks for question type, calls function, and formats output
   if (qType == 1) {
-    question <- getSetCardinalityMC(dType = dataType)
+    question <- getSetCardinalityMC(dType = dataType, difficulty = qDifficulty)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
     
   }

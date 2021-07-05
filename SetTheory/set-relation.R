@@ -432,12 +432,49 @@ getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1) {
 #                        sets, correct, and incorrect
 #                        answers.
 #
-getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = FALSE), dType = 1) {
+getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = FALSE), dType = 1, difficulty = 1) {
   #define the text of the question
   questionText <-('Let A be a set. What is the cardinality of set A?')
-  #generate and fill sets
-  sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+  if (difficulty == 1) {
+    #generate and fill sets
+    sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+  }
   
+  if (difficulty == 2) {
+    setSize = 9
+    #generate and fill sets
+    sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+    initial <- sourceSet[[1]]
+    
+    # Creating a probability variable which will cause the correct answer to be 
+    # generated with one of three different partitions for question variety.
+    # Setting length of initial variable creates the first partition.
+    probability <- sample(1:4, 1, replace = FALSE)
+    if (probability == 1) {
+      length(initial) <- 7
+    }
+    else if (probability == 2) {
+      length(initial) <- 5
+    }
+    else if (probability == 3) {
+      length(initial) <- 3
+    }
+    else {
+      length(initial) <- 0
+    }
+    
+    # Then creates the second partition with the remaining members from the source.
+    secondSet <- not(sourceSet[[1]], initial)
+    
+    # Formats each inner partition as a set and concatenates each set
+    # within the larger list. Then formats the larger list as a set.
+    initial <- formatListAsSet(initial)
+    secondSet <- formatListAsSet(secondSet)
+    sourceSet[[1]] <- list()
+    sourceSet[[1]] <- c(sourceSet[[1]], initial)
+    sourceSet[[1]] <- c(sourceSet[[1]], secondSet)
+    sourceSet[[1]] <- str_replace_all(sourceSet[[1]], "[$]", "")
+  }
   
   #creating the correct answer based on length of SourceSet
   correct <- lengths(sourceSet) 
@@ -452,7 +489,7 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   distractors[[3]] <- lengths(sourceSet) + 5
   
   
-  #Iterate through the sourceSets. format list as Set and insert at the index.
+  #Iterate through the sourceSet. format list as Set and insert at the index.
   counter <- 1
   for (s in sourceSet){
     sourceSet[counter] <- formatListAsSet(s)
@@ -614,7 +651,7 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   secondSet <- formatListAsSet(secondSet)
   correct <- c(correct, initial)
   correct <- c(correct, secondSet)
-  correct <- str_replace_all(correct, "[\\\\$]", "")
+  correct <- str_replace_all(correct, "[$]", "")
   correct <- formatListAsSet(correct)
   
   distractors <- vector(mode="list", length = 3)
@@ -646,9 +683,9 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   d3 <- c(d3, d3FirstSet)
   d3 <- c(d3, d3SecondSet)
   
-  d1 <- str_replace_all(d1, "[\\\\$]", "")
-  d2 <- str_replace_all(d2, "[\\\\$]", "")
-  d3 <- str_replace_all(d3, "[\\\\$]", "")
+  d1 <- str_replace_all(d1, "[$]", "")
+  d2 <- str_replace_all(d2, "[$]", "")
+  d3 <- str_replace_all(d3, "[$]", "")
   #Formatting larger distractor lists as sets.
   distractors[[1]] <- formatListAsSet(d1)
   distractors[[2]] <- formatListAsSet(d2)
