@@ -122,7 +122,7 @@ getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
 #                     sets, correct, and incorrect
 #                     answers.
 
-getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
+getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty =1 ) {
   
   #define the text of the question
   questionText <-('Let A and B be two sets. What is \\$A\\cap B\\$?')
@@ -132,6 +132,9 @@ getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   
   #creating the correct answer
   correct <- intersect(sourceSets[[1]], sourceSets[[2]])
+  if(difficulty > 1){
+    correct <- sample(correct, length(correct), replace = FALSE)
+  }
   if(length(correct) > 0){
     correct <- formatListAsSet(correct) #format for output
   } else {
@@ -144,6 +147,9 @@ getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   #add distractors to the list. 
   for(i in (1:3)){
     currentDist <- correct
+    if(difficulty > 1){ #difficulty higher than 1 scrambles lists in output.
+      currentDist <- sample(correct, replace = FALSE)
+    }
 
     if(i == 1){ #alter answer by removing an element
       if(currentDist == "\\$\\emptyset\\$"){
@@ -222,6 +228,9 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   
   #creating the correct answer
   correct <- not(sourceSets[[1]], sourceSets[[2]])
+  if(difficulty > 1){
+    correct <- sample(correct, length(correct), replace = FALSE)
+  }
   if(length(correct) > 0){
     correct <- formatListAsSet(correct) #format for output
   } else {
@@ -233,6 +242,9 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   
   #add distractors to the list. 
   for(i in (1:3)){
+    if(difficulty > 1){ #difficulty higher than 1 scrambles lists in output.
+      currentDist <- sample(correct, replace = FALSE)
+    }
     currentDist <- correct
     
     if(i == 1){ #empty set or set intersect

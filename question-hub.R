@@ -51,7 +51,7 @@ getSetIntersect <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   question <- list()
   
   if(qType == 1){
-    question <- getSetIntersectMC(dType = dataType)
+    question <- getSetIntersectMC(dType = dataType, difficulty = qDifficulty)
     
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
@@ -66,7 +66,7 @@ getAsymDiff <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   output <- "If you're seeing this message, question generation isn't working properly."
   
   if(qType == 1){
-    question <- getAsymDiffMC(dType = dataType)
+    question <- getAsymDiffMC(dType = dataType, difficulty = qDifficulty)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
   
