@@ -449,31 +449,33 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
     # Creating a probability variable which will cause the correct answer to be 
     # generated with one of three different partitions for question variety.
     # Setting length of initial variable creates the first partition.
-    probability <- sample(1:4, 1, replace = FALSE)
-    if (probability == 1) {
-      length(initial) <- 7
-    }
-    else if (probability == 2) {
-      length(initial) <- 5
-    }
-    else if (probability == 3) {
-      length(initial) <- 3
-    }
-    else {
-      length(initial) <- 0
-    }
+    length(initial) <- sample(0:4, 1, replace = FALSE)
     
     # Then creates the second partition with the remaining members from the source.
     secondSet <- not(sourceSet[[1]], initial)
     
     # Formats each inner partition as a set and concatenates each set
     # within the larger list. Then formats the larger list as a set.
-    initial <- formatListAsSet(initial)
-    secondSet <- formatListAsSet(secondSet)
+    initial <- formatPartitionAsSet(initial)
     sourceSet[[1]] <- list()
     sourceSet[[1]] <- c(sourceSet[[1]], initial)
-    sourceSet[[1]] <- c(sourceSet[[1]], secondSet)
-    sourceSet[[1]] <- str_replace_all(sourceSet[[1]], "[$]", "")
+    
+    #chance variable will decide whether there are two or three partitioned sets
+    chance <- sample(1:2, 1, replace = FALSE)
+    if (chance == 1) {
+      secondSet <- formatPartitionAsSet(secondSet)
+      sourceSet[[1]] <- c(sourceSet[[1]], secondSet)
+    }
+    if (chance == 2) {
+      secondPartition <- secondSet
+      length(secondPartition) <- sample(1:3, 1, replace = FALSE)
+      thirdPartition <- not(secondSet, secondPartition)
+      secondSet <- formatPartitionAsSet(secondSet)
+      secondPartition <- formatPartitionAsSet(secondPartition)
+      thirdPartition <- formatPartitionAsSet(thirdPartition)
+      sourceSet[[1]] <- c(sourceSet[[1]], secondPartition)
+      sourceSet[[1]] <- c(sourceSet[[1]], thirdPartition)
+    }
   }
   
   #creating the correct answer based on length of SourceSet
@@ -647,11 +649,10 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   # Formats each inner partition as a set and concatenates each set
   # within the larger list. Then formats the larger list as a set.
-  initial <- formatListAsSet(initial)
-  secondSet <- formatListAsSet(secondSet)
+  initial <- formatPartitionAsSet(initial)
+  secondSet <- formatPartitionAsSet(secondSet)
   correct <- c(correct, initial)
   correct <- c(correct, secondSet)
-  correct <- str_replace_all(correct, "[$]", "")
   correct <- formatListAsSet(correct)
   
   distractors <- vector(mode="list", length = 3)
@@ -662,8 +663,8 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   # then finding remaining members and formatting both partitions as sets.
   d1SecondSet <- not(sourceSets[[1]], d1FirstSet)
-  d1FirstSet <- formatListAsSet(d1FirstSet)
-  d1SecondSet <- formatListAsSet(d1SecondSet)
+  d1FirstSet <- formatPartitionAsSet(d1FirstSet)
+  d1SecondSet <- formatPartitionAsSet(d1SecondSet)
   
   # and concatenating both sets inside larger empty list.
   d1 <- c(d1, d1FirstSet)
@@ -671,21 +672,18 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   length(d2FirstSet) <- 3
   d2SecondSet <- not(sourceSets[[1]], d2FirstSet)
-  d2FirstSet <- formatListAsSet(d2FirstSet)
-  d2SecondSet <- formatListAsSet(d2SecondSet)
+  d2FirstSet <- formatPartitionAsSet(d2FirstSet)
+  d2SecondSet <- formatPartitionAsSet(d2SecondSet)
   d2 <- c(d2, d2FirstSet)
   d2 <- c(d2, d2SecondSet)
   
   length(d3FirstSet) <- 2
   d3SecondSet <- not(sourceSets[[1]], d3FirstSet)
-  d3FirstSet <- formatListAsSet(d3FirstSet)
-  d3SecondSet <- formatListAsSet(d3SecondSet)
+  d3FirstSet <- formatPartitionAsSet(d3FirstSet)
+  d3SecondSet <- formatPartitionAsSet(d3SecondSet)
   d3 <- c(d3, d3FirstSet)
   d3 <- c(d3, d3SecondSet)
   
-  d1 <- str_replace_all(d1, "[$]", "")
-  d2 <- str_replace_all(d2, "[$]", "")
-  d3 <- str_replace_all(d3, "[$]", "")
   #Formatting larger distractor lists as sets.
   distractors[[1]] <- formatListAsSet(d1)
   distractors[[2]] <- formatListAsSet(d2)
