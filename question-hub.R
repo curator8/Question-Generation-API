@@ -122,7 +122,26 @@ getSetCardinality <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   
   #checks for question type, calls function, and formats output
   if (qType == 1) {
-    question <- getSetCardinalityMC(dType = dataType)
+    question <- getSetCardinalityMC(dType = dataType, difficulty = qDifficulty)
+    output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
+    
+  }
+  
+  return(output)
+}
+
+#* @post /getSymmDiff
+getSymmDiff <- function(qType = 1, qDifficulty = 1, dataType = 1) {
+  qTopic <- "SymmetricDifference"
+  qFormat <- "1"
+  #Error Message
+  output <- "If you're seeing this message, question generation isn't working properly."
+  
+  question <- list()
+  
+  #checks for question type, calls function, and formats output
+  if (qType == 1) {
+    question <- getSymmDiffMC(dType = dataType)
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
     
   }
@@ -196,13 +215,14 @@ cartesianProductQA <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   question <- list()
   
   if(qType == 1){
-    question <- cartesianProduct(dType = dataType)
+    question <- cartesianProduct(dType = dataType, difficulty = qDifficulty)
     
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
   
   return(output)
 }
+
 
 
 

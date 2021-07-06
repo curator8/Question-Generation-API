@@ -11,6 +11,7 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   <li>/getSetComplement</li>
   <li>/getSetEquality</li>
   <li>/getSetCardinality</li>
+  <li>/getSymmDiff</li>
   <li>/getSetPartitions</li>
   </ul>
 
@@ -22,6 +23,7 @@ Currently implemented API functions are found within the `set-relation.R` file. 
   Topic:  `setUnion`
 
   <h5>Parameters</h5>  
+  
 ```
   @param    qType           Question Type ('1': Multiple Choice)
   
@@ -75,6 +77,7 @@ The return is as follows:
     ]
   }
 }
+
 ```
 
 
@@ -83,7 +86,9 @@ The return is as follows:
   Topic:  `setIntersect`
 
   <h5>Parameters</h5>  
+  
 ```
+
   @param    qType           Question Type ('1': Multiple Choice)
   
   @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
@@ -97,6 +102,7 @@ The return is as follows:
   Topic:  `asymmetricDifference`
 
   <h5>Parameters</h5>  
+  
 ```
   @param    qType           Question Type ('1': Multiple Choice)
   
@@ -111,13 +117,16 @@ The return is as follows:
   Topic:  `setComplement`
 
   <h5>Parameters</h5>  
+  
 ```
+
   @param    qType           Question Type ('1': Multiple Choice)
   
   @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
   
   @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
                                        4: Char, 5: String, 6: Mixed) 
+                                       
 ```
   
   <h4>/getSetEquality(qType, qDifficulty, dataType) </h4>
@@ -125,13 +134,16 @@ The return is as follows:
   Topic:  `setEquality`
 
   <h5>Parameters</h5>  
+  
 ```
+
   @param    qType           Question Type ('1': Multiple Choice)
   
   @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
   
   @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
                                        4: Char, 5: String, 6: Mixed) 
+                                       
 ```
   
   <h4>/getSetCardinality(qType, qDifficulty, dataType) </h4>
@@ -139,7 +151,25 @@ The return is as follows:
   Topic:  `setCardinality`
 
   <h5>Parameters</h5>  
+  
 ```
+
+  @param    qType           Question Type ('1': Multiple Choice)
+  
+  @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
+  
+  @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
+                                       4: Char, 5: String, 6: Mixed) 
+```
+
+ <h4>/getSymmDiff(qType, qDifficulty, dataType) </h4>
+  
+  Topic:  `symmetricDifference`
+
+  <h5>Parameters</h5>  
+  
+```
+
   @param    qType           Question Type ('1': Multiple Choice)
   
   @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
@@ -153,13 +183,16 @@ The return is as follows:
   Topic:  `setPartitions`
 
   <h5>Parameters</h5>  
+  
 ```
+
   @param    qType           Question Type ('1': Multiple Choice)
   
   @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
   
   @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
                                        4: Char, 5: String, 6: Mixed) 
+                                       
 ```
 
  <h4>/setExpressions(qType, qDifficulty) </h4>
@@ -167,7 +200,9 @@ The return is as follows:
   Topic:  `setExpressions`
 
   <h5>Parameters</h5>  
+  
 ```
+
   @param    qType           Question Type ('1': Multiple Choice)
   
   @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)

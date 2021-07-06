@@ -5,7 +5,7 @@
 library(set)
 library(nsprcomp)
 library(sets)
-library(purrr)
+
 
 source("utils/format.R") #set string formatting
 source("utils/set-generation.R") #set generation
@@ -432,12 +432,57 @@ getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1) {
 #                        sets, correct, and incorrect
 #                        answers.
 #
-getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = FALSE), dType = 1) {
+getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = FALSE), dType = 1, difficulty = 1) {
   #define the text of the question
   questionText <-('Let A be a set. What is the cardinality of set A?')
-  #generate and fill sets
-  sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+  if (difficulty == 1) {
+    #generate and fill sets
+    sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+  }
   
+  if (difficulty == 2) {
+    setSize = 9
+    #generate and fill sets
+    sourceSet <- getSets(n = numSets, m = setSize, x = dType)
+    initial <- sourceSet[[1]]
+    
+    # Creating a probability variable which will cause the correct answer to be 
+    # generated with one of three different partitions for question variety.
+    # Setting length of initial variable creates the first partition.
+    length(initial) <- sample(0:4, 1, replace = FALSE)
+    
+    # Then creates the second partition with the remaining members from the source.
+    secondSet <- not(sourceSet[[1]], initial)
+    
+    # Formats each inner partition as a set and concatenates each set
+    # within the larger list. Then formats the larger list as a set.
+    if (sample(1:2, 1, replace = FALSE) == 2) {
+      initial <- formatPartitionAsSet(initial)
+    }
+    sourceSet[[1]] <- list()
+    sourceSet[[1]] <- c(sourceSet[[1]], initial)
+    
+    #chance variable will decide whether there are two or three partitioned sets
+    chance <- sample(1:2, 1, replace = FALSE)
+    if (chance == 1) {
+      secondSet <- formatPartitionAsSet(secondSet)
+      sourceSet[[1]] <- c(sourceSet[[1]], secondSet)
+    }
+    if (chance == 2) {
+      secondPartition <- secondSet
+      length(secondPartition) <- sample(0:4, 1, replace = FALSE)
+      thirdPartition <- not(secondSet, secondPartition)
+      secondSet <- formatPartitionAsSet(secondSet)
+      if (sample(1:2, 1, replace = FALSE) == 2) {
+      secondPartition <- formatPartitionAsSet(secondPartition)
+      }
+      if (sample(1:2, 1, replace = FALSE) == 2) {
+      thirdPartition <- formatPartitionAsSet(thirdPartition)
+      }
+      sourceSet[[1]] <- c(sourceSet[[1]], secondPartition)
+      sourceSet[[1]] <- c(sourceSet[[1]], thirdPartition)
+    }
+  }
   
   #creating the correct answer based on length of SourceSet
   correct <- lengths(sourceSet) 
@@ -452,7 +497,7 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   distractors[[3]] <- lengths(sourceSet) + 5
   
   
-  #Iterate through the sourceSets. format list as Set and insert at the index.
+  #Iterate through the sourceSet. format list as Set and insert at the index.
   counter <- 1
   for (s in sourceSet){
     sourceSet[counter] <- formatListAsSet(s)
@@ -472,7 +517,99 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   #return question info
   return(toSend)
 }
+
+# getSymmDiff() generates and prepares 2 sets of length 5, 
+# as well as 3 "distractors" and 1 correct answer.
+# The correct answer is a string which states the unique members of each set
+# which constitute the symmetric difference between the two sets.
+#
+#
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
+#
   
+getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1){
+  
+  #define the text of the question
+  questionText <-('Let A and B be two unique sets. What is the symmetric difference of A and B?')
+  
+  #generate and fill sets
+  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+  
+  #set sourceSet 2 equal to sourceSet 1 and scramble the set, then replace three members.
+  sourceSets[[2]] <- sourceSets[[1]]
+  
+  sourceSets[[2]] <- sample(sourceSets[[2]], length(sourceSets[[2]]), replace  = FALSE)
+  
+  sourceSets[[2]] <- replace(sourceSets[[2]], length(sourceSets[[2]]) - sample(0:1, 1, replace = FALSE), 
+                             getValue(x = dType, min = 21, max = 30, cat = 6))
+  sourceSets[[2]] <- replace(sourceSets[[2]], length(sourceSets[[2]]) - sample(0:1, 1, replace = FALSE), 
+                             getValue(x = dType, min = 21, max = 30, cat = 6))
+  sourceSets[[2]] <- replace(sourceSets[[2]], length(sourceSets[[2]]) - sample(0:1, 1, replace = FALSE), 
+                             getValue(x = dType, min = 21, max = 30, cat = 6))
+  
+  
+  #set correct answer as a list of values unique to both sets
+  correct <- list()
+  correct <- not(sourceSets[[1]], sourceSets[[2]])
+  correct <- append(correct, not(sourceSets[[2]], sourceSets[[1]]), after = length(correct))
+  
+  
+  #Creating distractors based on correct answer.
+  distractors <- vector(mode="list", length = 3)
+
+  distractors[[1]] <- correct
+  distractors[[1]] <- replace(distractors[[1]], length(distractors[[1]]), 
+                             getValue(x = dType, min = 1, max = 30, cat = 6))
+  distractors[[1]] <- formatListAsSet(distractors[[1]])
+  distractors[[2]] <- correct
+  distractors[[2]] <- replace(distractors[[2]], length(distractors[[2]]) - 1, 
+                             getValue(x = dType, min = 1, max = 30, cat = 6))
+  distractors[[2]] <- formatListAsSet(distractors[[2]])
+  distractors[[3]] <- correct
+  distractors[[3]] <- replace(distractors[[3]], length(distractors[[3]]) - 2, 
+                             getValue(x = dType, min = 1, max = 30, cat = 6))
+  distractors[[3]] <- formatListAsSet(distractors[[3]])
+  
+  correct <- formatListAsSet(correct)
+
+  #Iterate through the sourceSets. format list as Set and insert at the index.
+  counter <- 1
+  for (s in sourceSets){
+    sourceSets[counter] <- formatListAsSet(s)
+    counter <- counter + 1
+  }
+
+  #format the the sourceSet as Question Strings
+  # "A = {...}"
+  sourceSets <- insertSetQStrings(sourceSets)
+
+  # now we concatenate the question contents together
+  questionContents <- c(questionText, sourceSets)
+
+  #add all items to a list for return
+  toSend <- list(content = questionContents, correct = correct, distractors = distractors)
+
+  #return question info
+  return(toSend)
+}
+  
+# getSetPartitions() generates and prepares 1 set of length 5, 
+# as well as 3 "distractors" and 1 correct answer.
+# The correct answer is the set which represents an incorrect partition
+# of the sourceSet.
+#
+#
+# @param  numSets        The number of sets to consider
+# @param  setSize        The number of elements in each set. 
+# @response json         A json object containing the
+#                        sets, correct, and incorrect
+#                        answers.
+#
+
 getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   #define the text of the question
@@ -518,8 +655,8 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   # Formats each inner partition as a set and concatenates each set
   # within the larger list. Then formats the larger list as a set.
-  initial <- formatListAsSet(initial)
-  secondSet <- formatListAsSet(secondSet)
+  initial <- formatPartitionAsSet(initial)
+  secondSet <- formatPartitionAsSet(secondSet)
   correct <- c(correct, initial)
   correct <- c(correct, secondSet)
   correct <- formatListAsSet(correct)
@@ -532,8 +669,8 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   # then finding remaining members and formatting both partitions as sets.
   d1SecondSet <- not(sourceSets[[1]], d1FirstSet)
-  d1FirstSet <- formatListAsSet(d1FirstSet)
-  d1SecondSet <- formatListAsSet(d1SecondSet)
+  d1FirstSet <- formatPartitionAsSet(d1FirstSet)
+  d1SecondSet <- formatPartitionAsSet(d1SecondSet)
   
   # and concatenating both sets inside larger empty list.
   d1 <- c(d1, d1FirstSet)
@@ -541,15 +678,15 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   length(d2FirstSet) <- 3
   d2SecondSet <- not(sourceSets[[1]], d2FirstSet)
-  d2FirstSet <- formatListAsSet(d2FirstSet)
-  d2SecondSet <- formatListAsSet(d2SecondSet)
+  d2FirstSet <- formatPartitionAsSet(d2FirstSet)
+  d2SecondSet <- formatPartitionAsSet(d2SecondSet)
   d2 <- c(d2, d2FirstSet)
   d2 <- c(d2, d2SecondSet)
   
   length(d3FirstSet) <- 2
   d3SecondSet <- not(sourceSets[[1]], d3FirstSet)
-  d3FirstSet <- formatListAsSet(d3FirstSet)
-  d3SecondSet <- formatListAsSet(d3SecondSet)
+  d3FirstSet <- formatPartitionAsSet(d3FirstSet)
+  d3SecondSet <- formatPartitionAsSet(d3SecondSet)
   d3 <- c(d3, d3FirstSet)
   d3 <- c(d3, d3SecondSet)
   
@@ -689,161 +826,640 @@ powerSetQA <- function(numSets = 1, setSize = 3, dType = 1) {
 }
 
 
-#cartesianProduct() generates and prepares 2 set of a random number of 
 #   @param      numSets         The number of sets to consider in the question
 #   @param      setSize         The length of the source sets.
 #   @param      dType           The desired data type for set elements
 #                               (1: Ints, 2: Real, 3: Complex, 
 #                               4: Char, 5: String, 6: Mixed)  
+#   @param      difficulty     The level of difficulty of the question generated.
 #
 #   @return     toSend          A json-like object containing the
 #                               source sets, correct, and 
 #                               distractors (incorrect answers)
 #  
-cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1) {
+cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1, difficulty = 1) {
   
-  questionText <-('Let A and B be two sets. What is \\$A\\times B\\$?')
-  
-  
-  #generate and fill sets
-  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
-  
-  
-  #convert each set into a vector to manipulate better
-  for(i in (1:2)){
-    sourceSets[[i]] <- unlist(sourceSets[[i]])
-  }
-  
-  
-  #finds the correct length/cardinality of the cartesian product set.
-  setOneLength = length(sourceSets[[1]])
-  setTwoLength = length(sourceSets[[2]])
-  cartesianProductCardinality = setOneLength * setTwoLength 
-  
-  
-  
-  #creates a list to store the pairs when the cartesian product is calculated
-  cartesianSet <- list()
-  #merge two sets to get a matrix.  
-  cartesianSet.df <- merge(sourceSets[[1]], sourceSets[[2]])
-  #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
-  for(e in (1:cartesianProductCardinality)) {
-    cartesianSet[[e]] <- as.vector(cartesianSet.df[e, ])
-    
-  }
-  #makes the cartesesian set into a string
-  correct <- toString(cartesianSet, width = NULL) 
-  #uses the formatListAsSet function to format the string located in "utils/format.R".
-  correct <- formatListAsSet(correct[[1]])
-  
-  
-  
-  
-  
-  
-  
-  #Create a vector that will hold distractors
-  #NOTE: we declare the list with vector() here so that 
-  # we can also declare a length. This prevents R from
-  # copying the list every time we add an element
-  distractors <- vector(mode="list", length = 3)
-  
-  # add distractors to the list. 
-  # each element of the list should be a set
-  # represented as a list.
-  for(i in (1:3)){
-    
-    #set generation for Cartesian product. 
-    set1 <- (getSets(n = 1, m = (setSize), x = dType))
-    set2 <- (getSets(n = 1, m = (setSize), x = dType))
-    
-    #changes list to vector to better manipulate.
-    set1 <- unlist(set1)
-    set2 <- unlist(set2)
-    
-    #gets length for each set. 
-    set1Length = length(set1)
-    set2Length = length(set2)
-    
-    #gets length for Cartesian product. 
-    cartesianDistractorCardinality = set1Length * set2Length
+  if (difficulty == 1) {
+    questionText <-('Let A and B be two sets. What is \\$A\\times B\\$?')
     
     
-    #creates a list to store pairs of Cartesian product. 
-    cartesianDistractor <- list()
+    #generate and fill sets
+    sourceSets <- getSets(n = numSets, m = setSize, x = dType)
     
-    #merge two sets to get a matrix.  
-    cartesianDistractors.df <- merge(set1, set2)
     
-    #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
-    for(e in (1:cartesianDistractorCardinality)) {
-      cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+    #convert each set into a vector to manipulate better
+    for(i in (1:2)){
+      sourceSets[[i]] <- unlist(sourceSets[[i]])
     }
     
     
-    #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
-    currentDist <- cartesianDistractor
-    currentDist <- formatListAsSet(currentDist)  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    #finds the correct length/cardinality of the cartesian product set.
+    setOneLength = length(sourceSets[[1]])
+    setTwoLength = length(sourceSets[[2]])
+    cartesianProductCardinality = setOneLength * setTwoLength 
     
     
-    #Note the single brackets '[1]' here 
-    distractors[i] <- currentDist
+    
+    #creates a list to store the pairs when the cartesian product is calculated
+    cartesianSet <- list()
+    #merge two sets to get a matrix.  
+    cartesianSet.df <- merge(sourceSets[[1]], sourceSets[[2]])
+    #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+    for(e in (1:cartesianProductCardinality)) {
+      cartesianSet[[e]] <- as.vector(cartesianSet.df[e, ])
+      
+    }
+    #makes the cartesesian set into a string
+    correct <- toString(cartesianSet, width = NULL) 
+    #uses the formatListAsSet function to format the string located in "utils/format.R".
+    correct <- formatListAsSet(correct[[1]])
+    
+    
+    
+    
+    
+    
+    
+    #Create a vector that will hold distractors
+    #NOTE: we declare the list with vector() here so that 
+    # we can also declare a length. This prevents R from
+    # copying the list every time we add an element
+    distractors <- vector(mode="list", length = 3)
+    
+    # add distractors to the list. 
+    # each element of the list should be a set
+    # represented as a list.
+    for(i in (1:3)){
+      
+      #set generation for Cartesian product. 
+      set1 <- (getSets(n = 1, m = (setSize), x = dType))
+      set2 <- (getSets(n = 1, m = (setSize), x = dType))
+      
+      #changes list to vector to better manipulate.
+      set1 <- unlist(set1)
+      set2 <- unlist(set2)
+      
+      #gets length for each set. 
+      set1Length = length(set1)
+      set2Length = length(set2)
+      
+      #gets length for Cartesian product. 
+      cartesianDistractorCardinality = set1Length * set2Length
+      
+      
+      #creates a list to store pairs of Cartesian product. 
+      cartesianDistractor <- list()
+      
+      #merge two sets to get a matrix.  
+      cartesianDistractors.df <- merge(set1, set2)
+      
+      #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+      for(e in (1:cartesianDistractorCardinality)) {
+        cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+      }
+      
+      
+      #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
+      currentDist <- cartesianDistractor
+      currentDist <- formatListAsSet(currentDist)  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+      
+      
+      #Note the single brackets '[1]' here 
+      distractors[i] <- currentDist
+    }
+    
+    
+    #formats the "distractor" cartesian product string correctly.
+    for(i in (1:3)) {
+      temporarySet <- distractors[[i]]
+      temporarySet <- str_replace_all(temporarySet, c("list" = ""))
+      temporarySet <- str_replace_all(temporarySet, c(":" = ", "))
+      temporarySet <- str_replace_all(temporarySet, c("x = " = ""))
+      temporarySet <- str_replace_all(temporarySet, c("y = " = ""))
+      temporarySet <- str_replace_all(temporarySet, c('\"' = ""))
+      distractors[[i]] <- temporarySet
+    }
+    
+    
+    
+    
+    
+    
+    
+    #now we format the sourceSets for output. We waited to do this so we could use
+    # the sourceSets for distractor generation.
+    
+    #Iterate through the sourceSets. format list as Set and insert at the index.
+    #COpy a
+    
+    counter <- 1
+    for (s in sourceSets){
+      sourceSets[counter] <- formatListAsSet(s)
+      counter <- counter + 1
+    }
+    
+    
+    #format the the sourceSets as Question String.
+    # "A = {...}"
+    # "B = {...}"
+    sourceSets <- insertSetQStrings(sourceSets)
+    
+    
+    #formats the "correct" cartesian product string correctly.
+    correct <- formatListAsSet(cartesianSet)
+    correct <- str_replace_all(correct,c("list" = ""))
+    correct <- str_replace_all(correct, c("x = " = ""))
+    correct <- str_replace_all(correct, c("y = " = ""))
+    correct <- str_replace_all(correct, c('\"' = ""))
+    
+    
+    
+    # now we concatenate the question contents together
+    questionContents <- c(questionText, sourceSets)
+    
+    #format answers and sources into json and return results 
+    toSend <- list(content= questionContents, correct= correct, distractors= distractors)
+    
+    #jsonToSend <- toJSON(toSend)
+    
+    
+    return(toSend)
   }
   
-  
-  #formats the "distractor" cartesian product string correctly.
-  for(i in (1:3)) {
-    temporarySet <- distractors[[i]]
-    temporarySet <- str_replace_all(temporarySet, c("list" = ""))
-    temporarySet <- str_replace_all(temporarySet, c(":" = ", "))
-    temporarySet <- str_replace_all(temporarySet, c("x = " = ""))
-    temporarySet <- str_replace_all(temporarySet, c("y = " = ""))
-    temporarySet <- str_replace_all(temporarySet, c('\"' = ""))
-    distractors[[i]] <- temporarySet
+  else if (difficulty == 2) {
+    #randomly decides whether the question will A x B or B x A
+    randomChoice <- sample((1:2), 1)
+    
+    
+    if (randomChoice == 1 ) {
+      
+      
+      questionText1 <-('Let A and B be two sets. What is \\$A\\times B\\$?')
+      
+      
+      #generate and fill sets
+      sourceSets <- getSets(n = numSets, m = sample((2:4),1), x = dType)
+      
+      #convert each set into a vector to manipulate better
+      for(i in (1:2)){
+        sourceSets[[i]] <- unlist(sourceSets[[i]])
+      }
+      
+      
+      
+      #finds the correct length/cardinality of the cartesian product set.
+      setOneLength = length(sourceSets[[1]])
+      setTwoLength = length(sourceSets[[2]])
+      cartesianProductCardinality = setOneLength * setTwoLength 
+      
+      
+      
+      #creates a list to store the pairs when the cartesian product is calculated
+      cartesianSet <- list()
+      #merge two sets to get a matrix.  
+      cartesianSet.df <- merge(sourceSets[[1]], sourceSets[[2]])
+      #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+      for(e in (1:cartesianProductCardinality)) {
+        cartesianSet[[e]] <- as.vector(cartesianSet.df[e, ])
+        
+      }
+      #makes the cartesesian set into a string
+      correct <- toString(cartesianSet, width = NULL) 
+      #uses the formatListAsSet function to format the string located in "utils/format.R".
+      correct <- formatListAsSet(correct[[1]])
+      
+      
+      
+      #Create a vector that will hold distractors
+      #NOTE: we declare the list with vector() here so that 
+      # we can also declare a length. This prevents R from
+      # copying the list every time we add an element
+      distractors <- vector(mode="list", length = 3)
+      
+      # three types of distractors are implemented for lvl 2 difficulty: reverse Sets, flipped cartesian product (for example B X A instead of A X B), and random sets. 
+      # add distractors to the list. 
+      # each element of the list should be a set
+      # represented as a list.
+      for(i in (1:3)){
+        
+        #check to see if question is a flipped question
+        
+        #generate different sets some that are reversed, some normal, some from source but multiplied from in wrong order. 
+        
+        if (i == 1) {
+          
+          
+          #set generation for Cartesian product.Grabs a completely random set using the getSet function from "utils/set-generation.R'
+          randomSet1 <- (getSets(n = 1, m = (setSize), x = dType))
+          randomSet2 <- (getSets(n = 1, m = (setSize), x = dType))
+          
+          #changes list to vector to better manipulate.
+          randomSet1 <- unlist(randomSet1)
+          randomSet2 <- unlist(randomSet2)
+          
+          #gets length for each set. 
+          set1Length = length(randomSet1)
+          set2Length = length(randomSet2)
+          
+          #gets length for Cartesian product. 
+          cartesianDistractorCardinality = set1Length * set2Length
+          
+          
+          #creates a list to store pairs of Cartesian product. 
+          cartesianDistractor <- list()
+          
+          #merge two sets to get a matrix.  
+          cartesianDistractors.df <- merge(randomSet1, randomSet2)
+          
+          #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+          for(e in (1:cartesianDistractorCardinality)) {
+            cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+          }
+          
+          
+          #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
+          currentDist <- cartesianDistractor
+          currentDist <- formatListAsSet(currentDist)  
+          
+          #Note the single brackets '[1]' here 
+          distractors[i] <- currentDist
+          
+          
+        }
+        
+        else if (i == 2) {
+          
+          #the reversed sets from the source sets. 
+          reverseSet1 <- rev(sourceSets[[1]])
+          reverseSet2 <- rev(sourceSets[[2]])
+          
+          
+          #changes list to vector to better manipulate.
+          reverseSet1 <- unlist(reverseSet1)
+          reverseSet2 <- unlist(reverseSet2)
+          
+          #gets length for each set. 
+          set1Length = length(reverseSet1)
+          set2Length = length(reverseSet2)
+          
+          #gets length for Cartesian product. 
+          cartesianDistractorCardinality = set1Length * set2Length
+          
+          
+          #creates a list to store pairs of Cartesian product. 
+          cartesianDistractor <- list()
+          
+          #merge two sets to get a matrix.  
+          cartesianDistractors.df <- merge(reverseSet1, reverseSet2)
+          
+          #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+          for(e in (1:cartesianDistractorCardinality)) {
+            cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+          }
+          
+          
+          #assigns the cartesian pairs to currentDist and formats it using formatListAsSet function from "utils/format.R".
+          currentDist <- cartesianDistractor
+          currentDist <- formatListAsSet(currentDist)  
+          
+          
+          #Note the single brackets '[1]' here 
+          distractors[i] <- currentDist
+          
+        }
+        
+        else {
+          
+          #the original sets used in the original question which will be calculated as B X A instead of A X B
+          origSet1 <- sourceSets[[1]]
+          origSet2 <- sourceSets[[2]]
+          
+          #append the randomly generated sets with the original sets and reversed sets in correct question 
+          
+          
+          #changes list to vector to better manipulate.
+          origSet1 <- unlist(origSet1)
+          origSet2 <- unlist(origSet2)
+          
+          #gets length for each set. 
+          set1Length = length(origSet1)
+          set2Length = length(origSet2)
+          
+          #gets length for Cartesian product. 
+          cartesianDistractorCardinality = set1Length * set2Length
+          
+          
+          #creates a list to store pairs of Cartesian product. 
+          cartesianDistractor <- list()
+          
+          #merge two sets to get a matrix.  
+          cartesianDistractors.df <- merge(origSet2, origSet1)
+          
+          #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+          for(e in (1:cartesianDistractorCardinality)) {
+            cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+          }
+          
+          
+          #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
+          currentDist <- cartesianDistractor
+          currentDist <- formatListAsSet(currentDist)  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+          
+          
+          #Note the single brackets '[1]' here 
+          distractors[i] <- currentDist
+        }
+        
+        
+      }
+      
+      
+      #formats the "distractor" cartesian product string correctly.
+      for(i in (1:3)) {
+        temporarySet <- distractors[[i]]
+        temporarySet <- str_replace_all(temporarySet, c("list" = ""))
+        temporarySet <- str_replace_all(temporarySet, c(":" = ", "))
+        temporarySet <- str_replace_all(temporarySet, c("x = " = ""))
+        temporarySet <- str_replace_all(temporarySet, c("y = " = ""))
+        temporarySet <- str_replace_all(temporarySet, c('\"' = ""))
+        distractors[[i]] <- temporarySet
+      }
+      
+      
+      
+      
+      
+      
+      #now we format the sourceSets for output. We waited to do this so we could use
+      # the sourceSets for distractor generation.
+      
+      #Iterate through the sourceSets. format list as Set and insert at the index.
+      #COpy a
+      
+      counter <- 1
+      for (s in sourceSets){
+        sourceSets[counter] <- formatListAsSet(s)
+        counter <- counter + 1
+      }
+      
+      
+      #format the the sourceSets as Question String.
+      # "A = {...}"
+      # "B = {...}"
+      sourceSets <- insertSetQStrings(sourceSets)
+      
+      
+      #formats the "correct" cartesian product string correctly.
+      correct <- formatListAsSet(cartesianSet)
+      correct <- str_replace_all(correct,c("list" = ""))
+      correct <- str_replace_all(correct, c("x = " = ""))
+      correct <- str_replace_all(correct, c("y = " = ""))
+      correct <- str_replace_all(correct, c('\"' = ""))
+      
+      
+      # now we concatenate the question contents together
+      questionContents <- c(questionText1, sourceSets)
+      
+      #format answers and sources into json and return results 
+      toSend <- list(content= questionContents, correct= correct, distractors= distractors)
+      
+      return(toSend)
+      
+      
+      
+    } else {
+      
+      questionText2 <-('Let A and B be two sets. What is \\$B\\times A\\$?')
+      
+      #generate and fill sets
+      sourceSets <- getSets(n = numSets, m = sample((2:4),1), x = dType)
+      
+
+      #convert each set into a vector to manipulate better
+      for(i in (1:2)){
+        sourceSets[[i]] <- unlist(sourceSets[[i]])
+      }
+      
+      
+      #finds the correct length/cardinality of the cartesian product set.
+      setOneLength = length(sourceSets[[1]])
+      setTwoLength = length(sourceSets[[2]])
+      cartesianProductCardinality = setOneLength * setTwoLength 
+      
+      
+      
+      #creates a list to store the pairs when the cartesian product is calculated
+      cartesianSet <- list()
+      #merge two sets to get a matrix.  
+      cartesianSet.df <- merge(sourceSets[[2]], sourceSets[[1]])
+      #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+      for(e in (1:cartesianProductCardinality)) {
+        cartesianSet[[e]] <- as.vector(cartesianSet.df[e, ])
+        
+      }
+      #makes the cartesesian set into a string
+      correct <- toString(cartesianSet, width = NULL) 
+      #uses the formatListAsSet function to format the string located in "utils/format.R".
+      correct <- formatListAsSet(correct[[1]])
+      
+      
+      
+      #Create a vector that will hold distractors
+      #NOTE: we declare the list with vector() here so that 
+      # we can also declare a length. This prevents R from
+      # copying the list every time we add an element
+      distractors <- vector(mode="list", length = 3)
+      
+      # three types of distractors are implemented for lvl 2 difficulty: reverse Sets, flipped cartesian product (for example B X A instead of A X B), and random sets. 
+      # add distractors to the list. 
+      # each element of the list should be a set
+      # represented as a list.
+      for(i in (1:3)){
+        
+        #check to see if question is a flipped question
+        
+        #generate different sets some that are reversed, some normal, some from source but multiplied from in wrong order. 
+        
+        if (i == 1) {
+          
+          
+          #set generation for Cartesian product.Grabs a completely random set using the getSet function from "utils/set-generation.R'
+          randomSet1 <- (getSets(n = 1, m = (setSize), x = dType))
+          randomSet2 <- (getSets(n = 1, m = (setSize), x = dType))
+          
+          #changes list to vector to better manipulate.
+          randomSet1 <- unlist(randomSet1)
+          randomSet2 <- unlist(randomSet2)
+          
+          #gets length for each set. 
+          set1Length = length(randomSet1)
+          set2Length = length(randomSet2)
+          
+          #gets length for Cartesian product. 
+          cartesianDistractorCardinality = set1Length * set2Length
+          
+          
+          #creates a list to store pairs of Cartesian product. 
+          cartesianDistractor <- list()
+          
+          #merge two sets to get a matrix.  
+          cartesianDistractors.df <- merge(randomSet1, randomSet2)
+          
+          #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+          for(e in (1:cartesianDistractorCardinality)) {
+            cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+          }
+          
+          
+          #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
+          currentDist <- cartesianDistractor
+          currentDist <- formatListAsSet(currentDist)  
+          
+          #Note the single brackets '[1]' here 
+          distractors[i] <- currentDist
+          
+          
+        }
+        
+        else if (i == 2) {
+          
+          #the reversed sets from the source sets. 
+          reverseSet1 <- rev(sourceSets[[1]])
+          reverseSet2 <- rev(sourceSets[[2]])
+          
+          
+          #changes list to vector to better manipulate.
+          reverseSet1 <- unlist(reverseSet1)
+          reverseSet2 <- unlist(reverseSet2)
+          
+          #gets length for each set. 
+          set1Length = length(reverseSet1)
+          set2Length = length(reverseSet2)
+          
+          #gets length for Cartesian product. 
+          cartesianDistractorCardinality = set1Length * set2Length
+          
+          
+          #creates a list to store pairs of Cartesian product. 
+          cartesianDistractor <- list()
+          
+          #merge two sets to get a matrix.  
+          cartesianDistractors.df <- merge(reverseSet2, reverseSet1)
+          
+          #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+          for(e in (1:cartesianDistractorCardinality)) {
+            cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+          }
+          
+          
+          #assigns the cartesian pairs to currentDist and formats it using formatListAsSet function from "utils/format.R".
+          currentDist <- cartesianDistractor
+          currentDist <- formatListAsSet(currentDist)  
+          
+          
+          #Note the single brackets '[1]' here 
+          distractors[i] <- currentDist
+          
+        }
+        
+        else {
+          
+          #the original sets used in the original question which will be calculated as A X B instead of B X A
+          origSet1 <- sourceSets[[1]]
+          origSet2 <- sourceSets[[2]]
+          
+          #append the randomly generated sets with the original sets and reversed sets in correct question 
+          
+          
+          #changes list to vector to better manipulate.
+          origSet1 <- unlist(origSet1)
+          origSet2 <- unlist(origSet2)
+          
+          #gets length for each set. 
+          set1Length = length(origSet1)
+          set2Length = length(origSet2)
+          
+          #gets length for Cartesian product. 
+          cartesianDistractorCardinality = set1Length * set2Length
+          
+          
+          #creates a list to store pairs of Cartesian product. 
+          cartesianDistractor <- list()
+          
+          #merge two sets to get a matrix.  
+          cartesianDistractors.df <- merge(origSet1, origSet2)
+          
+          #converts the matrix back to a vector (which is populated with the "cartesian" pairs). 
+          for(e in (1:cartesianDistractorCardinality)) {
+            cartesianDistractor[[e]] <- as.vector(cartesianDistractors.df[e, ])
+          }
+          
+          
+          #assigns the cartesian pairs list to currentDist and formats it using formatListAsSet function from "utils/format.R".
+          currentDist <- cartesianDistractor
+          currentDist <- formatListAsSet(currentDist)  
+          
+          
+          #Note the single brackets '[1]' here 
+          distractors[i] <- currentDist
+        }
+        
+        
+      }
+      
+      
+      #formats the "distractor" cartesian product string correctly.
+      for(i in (1:3)) {
+        temporarySet <- distractors[[i]]
+        temporarySet <- str_replace_all(temporarySet, c("list" = ""))
+        temporarySet <- str_replace_all(temporarySet, c(":" = ", "))
+        temporarySet <- str_replace_all(temporarySet, c("x = " = ""))
+        temporarySet <- str_replace_all(temporarySet, c("y = " = ""))
+        temporarySet <- str_replace_all(temporarySet, c('\"' = ""))
+        distractors[[i]] <- temporarySet
+      }
+      
+      
+      
+      
+      
+      
+      #now we format the sourceSets for output. We waited to do this so we could use
+      # the sourceSets for distractor generation.
+      
+      #Iterate through the sourceSets. format list as Set and insert at the index.
+      #COpy a
+      
+      counter <- 1
+      for (s in sourceSets){
+        sourceSets[counter] <- formatListAsSet(s)
+        counter <- counter + 1
+      }
+      
+      
+      #format the the sourceSets as Question String.
+      # "A = {...}"
+      # "B = {...}"
+      sourceSets <- insertSetQStrings(sourceSets)
+      
+      
+      #formats the "correct" cartesian product string correctly.
+      correct <- formatListAsSet(cartesianSet)
+      correct <- str_replace_all(correct,c("list" = ""))
+      correct <- str_replace_all(correct, c("x = " = ""))
+      correct <- str_replace_all(correct, c("y = " = ""))
+      correct <- str_replace_all(correct, c('\"' = ""))
+      
+      
+      # now we concatenate the question contents together
+      questionContents <- c(questionText2, sourceSets)
+      
+      #format answers and sources into json and return results 
+      toSend <- list(content= questionContents, correct= correct, distractors= distractors)
+      
+      return(toSend)
+      
+      
+    }
   }
-  
-  
-  
-  
-  
-  
-  
-  #now we format the sourceSets for output. We waited to do this so we could use
-  # the sourceSets for distractor generation.
-  
-  #Iterate through the sourceSets. format list as Set and insert at the index.
-  #COpy a
-  
-  counter <- 1
-  for (s in sourceSets){
-    sourceSets[counter] <- formatListAsSet(s)
-    counter <- counter + 1
-  }
-  
-  
-  #format the the sourceSets as Question String.
-  # "A = {...}"
-  # "B = {...}"
-  sourceSets <- insertSetQStrings(sourceSets)
-  
-  
-  #formats the "correct" cartesian product string correctly.
-  correct <- formatListAsSet(cartesianSet)
-  correct <- str_replace_all(correct,c("list" = ""))
-  correct <- str_replace_all(correct, c("x = " = ""))
-  correct <- str_replace_all(correct, c("y = " = ""))
-  correct <- str_replace_all(correct, c('\"' = ""))
-  
-  
-  
-  # now we concatenate the question contents together
-  questionContents <- c(questionText, sourceSets)
-  
-  #format answers and sources into json and return results 
-  toSend <- list(content= questionContents, correct= correct, distractors= distractors)
-  
-  #jsonToSend <- toJSON(toSend)
-  
-  return(toSend)
-  
 }
