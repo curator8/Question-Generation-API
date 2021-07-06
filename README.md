@@ -210,3 +210,36 @@ The return is as follows:
  
 ```
 
+<h4>/powerSetQ(qType, qDifficulty, dataType) </h4>
+  
+  Topic:  `powerSet`
+
+  <h5>Parameters</h5>  
+  
+```
+
+  @param    qType           Question Type ('1': Multiple Choice)
+  
+  @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
+  
+  @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
+                                       4: Char, 5: String, 6: Mixed) 
+                                       
+```
+
+<h4>/cartesianProduct(qType, qDifficulty, dataType) </h4>
+  
+  Topic:  `cartesianProduct`
+
+  <h5>Parameters</h5>  
+  
+```
+
+  @param    qType           Question Type ('1': Multiple Choice)
+  
+  @param    qDifficulty     Question Difficutly (1:easiest - 5:hardest)
+  
+  @param    dataType        Data type (1: Ints, 2: Real, 3: Complex, 
+                                       4: Char, 5: String, 6: Mixed) 
+                                       
+```
