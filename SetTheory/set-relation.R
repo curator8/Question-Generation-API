@@ -315,7 +315,7 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
 #                        sets, correct, and incorrect
 #                        answers.
 #
-getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1) {
+getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1, difficulty =1) {
   
   questionText <- "Let A be a set and B be the universal set. What is the complement of set A?"
   
@@ -329,6 +329,11 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1) {
   correct <- not(sourceSets[[2]], sourceSets[[1]])
   d1 <- correct
   d2 <- correct
+
+  #shuffles when diff over 1
+  if(difficulty > 1){
+    correct <- sample(correct, length(correct), replace = FALSE)
+  }
   correct <- formatListAsSet(correct)
   
   
@@ -337,12 +342,19 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1) {
   
   #distractor 1 Is similar to the correct answer, but with one different value
   d1 <- replace(d1, length(d1) - 2, getValue(x = dType, min = 21, max = 30)) 
-  
+  if(difficulty > 1){
+    d1 <- sample(d1, replace= FALSE)
+  }
   #distractor 2 is also similar to the correct answer, but with one replaced value
   d2 <- replace(d2, length(d2), getValue(x = dType, min = 21, max = 30))
-  
+  if(difficulty > 1){
+    d2 <- sample(d2, replace= FALSE)
+  }
   #distractor 3 is the original set which is not the complement and is wrong
   d3 <- sourceSets[[1]]
+  if(difficulty > 1){
+    d3 <- sample(d3, replace= FALSE)
+  }
   
   distractors[[1]] <- formatListAsSet(d1)
   distractors[[2]] <- formatListAsSet(d2)
