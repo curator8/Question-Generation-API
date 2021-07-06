@@ -456,7 +456,9 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
     
     # Formats each inner partition as a set and concatenates each set
     # within the larger list. Then formats the larger list as a set.
-    initial <- formatPartitionAsSet(initial)
+    if (sample(1:2, 1, replace = FALSE) == 2) {
+      initial <- formatPartitionAsSet(initial)
+    }
     sourceSet[[1]] <- list()
     sourceSet[[1]] <- c(sourceSet[[1]], initial)
     
@@ -468,11 +470,15 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
     }
     if (chance == 2) {
       secondPartition <- secondSet
-      length(secondPartition) <- sample(1:3, 1, replace = FALSE)
+      length(secondPartition) <- sample(0:4, 1, replace = FALSE)
       thirdPartition <- not(secondSet, secondPartition)
       secondSet <- formatPartitionAsSet(secondSet)
+      if (sample(1:2, 1, replace = FALSE) == 2) {
       secondPartition <- formatPartitionAsSet(secondPartition)
+      }
+      if (sample(1:2, 1, replace = FALSE) == 2) {
       thirdPartition <- formatPartitionAsSet(thirdPartition)
+      }
       sourceSet[[1]] <- c(sourceSet[[1]], secondPartition)
       sourceSet[[1]] <- c(sourceSet[[1]], thirdPartition)
     }
