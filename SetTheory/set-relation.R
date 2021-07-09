@@ -498,10 +498,10 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
       thirdPartition <- not(secondSet, secondPartition)
       secondSet <- formatPartitionAsSet(secondSet)
       if (sample(1:2, 1, replace = FALSE) == 2) {
-      secondPartition <- formatPartitionAsSet(secondPartition)
+        secondPartition <- formatPartitionAsSet(secondPartition)
       }
       if (sample(1:2, 1, replace = FALSE) == 2) {
-      thirdPartition <- formatPartitionAsSet(thirdPartition)
+        thirdPartition <- formatPartitionAsSet(thirdPartition)
       }
       sourceSet[[1]] <- c(sourceSet[[1]], secondPartition)
       sourceSet[[1]] <- c(sourceSet[[1]], thirdPartition)
@@ -513,13 +513,16 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   
   #Creating distractors based on correct answer.
   distractors <- vector(mode="list", length = 3)
+  probability <- sample(1:2, 1, return = FALSE)
   
-  distractors[[1]] <- lengths(sourceSet) - 1
-  
-  distractors[[2]] <- lengths(sourceSet) + 1
-  
-  distractors[[3]] <- lengths(sourceSet) + 5
-  
+  for(i in 1:3) {
+    if (probability == 1) {
+      distractors[[i]] <- lengths(sourceSet) - sample(1:2, 1, return = FALSE)
+    }
+    if (probability == 2) {
+      distractors[[i]] <- lengths(sourceSet) + sample(1:2, 1, return = FALSE)
+    }
+  }
   
   #Iterate through the sourceSet. format list as Set and insert at the index.
   counter <- 1
@@ -584,19 +587,16 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1){
   
   #Creating distractors based on correct answer.
   distractors <- vector(mode="list", length = 3)
-
-  distractors[[1]] <- correct
-  distractors[[1]] <- replace(distractors[[1]], length(distractors[[1]]), 
-                             getValue(x = dType, min = 1, max = 30, cat = 6))
-  distractors[[1]] <- formatListAsSet(distractors[[1]])
-  distractors[[2]] <- correct
-  distractors[[2]] <- replace(distractors[[2]], length(distractors[[2]]) - 1, 
-                             getValue(x = dType, min = 1, max = 30, cat = 6))
-  distractors[[2]] <- formatListAsSet(distractors[[2]])
-  distractors[[3]] <- correct
-  distractors[[3]] <- replace(distractors[[3]], length(distractors[[3]]) - 2, 
-                             getValue(x = dType, min = 1, max = 30, cat = 6))
-  distractors[[3]] <- formatListAsSet(distractors[[3]])
+  
+  for (i in (1:3)) {
+    currentDist <- list()
+    currentDist[[1]] <- correct
+    wrong <- currentDist[[1]]
+    wrong <- replace(wrong, length(wrong) - sample(0:1, 1, replace = FALSE), getValue(x = dType, min = 1, max = 30, cat = 6))
+    currentDist[[1]] <- wrong
+    currentDist <- formatListAsSet(currentDist[[1]])
+    distractors[i] <- currentDist
+  }
   
   correct <- formatListAsSet(correct)
 
@@ -644,15 +644,7 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   #scrambling the sets to be used for both the correct and distractor partitions.
   initial <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
-  d1FirstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
-  d2FirstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
-  d3FirstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
   
-  # Creating empty lists for both the correct and three distractor answers which will
-  # be filled with the generated partitions.
-  d1 <- list()
-  d2 <- list()
-  d3 <- list()
   correct <- list()
   
   # Creating a probability variable which will cause the correct answer to be 
@@ -687,37 +679,27 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1) {
   
   distractors <- vector(mode="list", length = 3)
   
-  # For each of the three distractors, 
-  # begin by setting varying lengths of first partition. 
-  length(d1FirstSet) <- 4
   
-  # then finding remaining members and formatting both partitions as sets.
-  d1SecondSet <- not(sourceSets[[1]], d1FirstSet)
-  d1FirstSet <- formatPartitionAsSet(d1FirstSet)
-  d1SecondSet <- formatPartitionAsSet(d1SecondSet)
+  for(i in (1:3)){
+    #generate and partition distractor sets
+    currentDist <- (getSets(n = 1, m = 5, x = dType))
+    firstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
+    length(firstSet) <- sample(2:4, 1, replace = FALSE)
+    secondSet <- not(sourceSets[[1]], firstSet)
+    firstSet <- formatPartitionAsSet(firstSet)
+    secondSet <- formatPartitionAsSet(secondSet)
+    wrong <- list()
+    # and concatenating both sets inside larger empty list.
+    # Wrong variable is created to deal with weird out of bounds issue in R.
+    wrong <- c(wrong, firstSet)
+    wrong <- c(wrong, secondSet)
+    currentDist[[1]] <- wrong
+    currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    
+    #Note the single brackets '[1]' here 
+    distractors[i] <- currentDist
+  }
   
-  # and concatenating both sets inside larger empty list.
-  d1 <- c(d1, d1FirstSet)
-  d1 <- c(d1, d1SecondSet)
-  
-  length(d2FirstSet) <- 3
-  d2SecondSet <- not(sourceSets[[1]], d2FirstSet)
-  d2FirstSet <- formatPartitionAsSet(d2FirstSet)
-  d2SecondSet <- formatPartitionAsSet(d2SecondSet)
-  d2 <- c(d2, d2FirstSet)
-  d2 <- c(d2, d2SecondSet)
-  
-  length(d3FirstSet) <- 2
-  d3SecondSet <- not(sourceSets[[1]], d3FirstSet)
-  d3FirstSet <- formatPartitionAsSet(d3FirstSet)
-  d3SecondSet <- formatPartitionAsSet(d3SecondSet)
-  d3 <- c(d3, d3FirstSet)
-  d3 <- c(d3, d3SecondSet)
-  
-  #Formatting larger distractor lists as sets.
-  distractors[[1]] <- formatListAsSet(d1)
-  distractors[[2]] <- formatListAsSet(d2)
-  distractors[[3]] <- formatListAsSet(d3)
   
   #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
