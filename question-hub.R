@@ -196,7 +196,7 @@ powerSetQ <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   
   #checks for question type, calls function, and formats output
   if(qType == 1){
-    question <- powerSetQA(dType = dataType)
+    question <- powerSetQA(dType = dataType, difficulty = qDifficulty)
     
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
     
