@@ -513,14 +513,14 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
   
   #Creating distractors based on correct answer.
   distractors <- vector(mode="list", length = 3)
-  probability <- sample(1:2, 1, return = FALSE)
+  probability <- sample(1:2, 1, replace = FALSE)
   
   for(i in 1:3) {
     if (probability == 1) {
-      distractors[[i]] <- lengths(sourceSet) - sample(1:2, 1, return = FALSE)
+      distractors[[i]] <- lengths(sourceSet) - sample(1:2, 1, replace = FALSE)
     }
     if (probability == 2) {
-      distractors[[i]] <- lengths(sourceSet) + sample(1:2, 1, return = FALSE)
+      distractors[[i]] <- lengths(sourceSet) + sample(1:2, 1, replace = FALSE)
     }
   }
   
