@@ -1058,7 +1058,7 @@ powerSetQA <- function(numSets = 1, setSize = 3, dType = 6, difficulty = 1) {
             
             #2 x length 
             currentDist <- toString(length(sourceSetsVector), width = NULL)
-            currentDist <- paste("\\$", "2\times", stringedAnswer, "\\$")
+            currentDist <- paste("\\$", "2\\times", stringedAnswer, "\\$")
             
             
             #Note the single brackets '[1]' here
