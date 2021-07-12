@@ -215,7 +215,7 @@ cartesianProductQA <- function(qType = 1, qDifficulty = 1, dataType = 1) {
   question <- list()
   
   if(qType == 1){
-    question <- cartesianProduct(dType = dataType, difficulty = qDifficulty)
+    question <- cartesianProduct(dType = sample(1:6,1), difficulty = qDifficulty)
     
     output <- list(topic = qTopic, type = qType, format = qFormat, difficulty = qDifficulty, question = question)
   }
