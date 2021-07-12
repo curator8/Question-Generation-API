@@ -399,37 +399,94 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1, difficulty =
 #                        answers.
 #
 
-getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1) {
+getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1) {
   questionText <- "Let A and B be two sets. Are A and B equal?"
   #Hard Coded this as the function only works with two sets at the moment.
   numSets <- 2
-  #generate and fill sets
-  sourceSets <- getSets(n = numSets, m = setSize, x = dType)
-  
   #sets 50/50 probability of generated sets being equal or not.
   probability <- sample(1:2, 1, replace = FALSE)
-  if (probability == 1) {
-    #makes 2nd set equal to first and formats correct and incorrect answers.
-    sourceSets[[2]] <- sourceSets[[1]]
-    correct <- "Equal" #format for output
-    distractors <- "Not Equal"
+  if (difficulty == 1) {
+    #generate and fill sets
+    sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+    if (probability == 1) {
+      #makes 2nd set equal to first and formats correct and incorrect answers.
+      sourceSets[[2]] <- sourceSets[[1]]
+      correct <- "Equal" #format for output
+      distractors <- "Not Equal"
+    }
+    if (probability == 2) {
+      #makes 2nd set equal to first except for one replaced member, and formats answers.
+      sourceSets[[2]] <- sourceSets[[1]]
+      sourceSets[[2]] <- replace(sourceSets[[2]], 
+      length(sourceSets[[2]]) - sample(1:4, 1, replace = FALSE), 
+      getValue(x = dType, min = 1, max = 20, cat = 6))
+      correct <- "Not Equal"
+      distractors <- "Equal"
+      
+    }
+    #Iterate through the sourceSets. format list as Set and insert at the index.
+    counter <- 1
+    for (s in sourceSets){
+      sourceSets[counter] <- formatListAsSet(s)
+      counter <- counter + 1
+    }
   }
-  if (probability == 2) {
-    #makes 2nd set equal to first except for one replaced member, and formats answers.
-    sourceSets[[2]] <- sourceSets[[1]]
-    sourceSets[[2]] <- replace(sourceSets[[2]], 
-    length(sourceSets[[2]]) - sample(1:4, 1, replace = FALSE), 
-    getValue(x = dType, min = 1, max = 20, cat = 6))
-    correct <- "Not Equal"
-    distractors <- "Equal"
+  
+  if (difficulty > 1) {
+    sourceSets <- list()
+    if (dType == 1) {
+      memberType <- "ℤ"
+    }
+    if (dType == 2) {
+      memberType <- "ℝ"
+    }
+    if (dType == 3) {
+      memberType <- "ℂ"
+    }
+    initialValue <- getValue(x = dType, min = 1, max = 20, cat = 6)
+    finalValue <- getValue(x = dType, min = 20, max = 40, cat = 6)
+    chance <- sample(1:3, 1, replace = FALSE) 
+    #generate and fill sets
+    if (probability == 1) {
+      if (chance == 1) {
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue, " or x > ", finalValue), collapse = " ")
+      }
+      if (chance == 2) {
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue), collapse = " ")
+      }
+      if (chance == 3) {
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | ", initialValue, " < x < ", finalValue), collapse = " ")
+      }
+      sourceSets[[2]] <- sourceSets[[1]]
+      correct <- "Equal"
+      distractors <- "Not Equal"
+    }
+    if (probability == 2) {
+      setTwoInitial <- getValue(x = dType, min = 1, max = 20, cat = 6)
+      setTwoFinal <- getValue(x = dType, min = 20, max = 40, cat = 6)
+      if (chance == 1) {
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue, " or x > ", finalValue), collapse = " ")
+        sourceSets[[2]] <- paste(c("x \\in ", memberType, " | x < ", setTwoInitial, " or x > ", setTwoFinal), collapse = " ")
+      }
+      if (chance == 2) {
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue), collapse = " ")
+        sourceSets[[2]] <- paste(c("x \\in ", memberType, " | x < ", setTwoInitial), collapse = " ")
+      }
+      if (chance == 3) {
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | ", initialValue, " < x < ", finalValue), collapse = " ")
+        sourceSets[[2]] <- paste(c("x \\in ", memberType, " | ", setTwoInitial, " < x < ", setTwoFinal), collapse = " ")
+      }
+      correct <- "Not Equal"
+      distractors <- "Equal"
+    }
+    #Iterate through the sourceSets. format list as Set and insert at the index.
+    counter <- 1
+    for (s in sourceSets){
+      sourceSets[counter] <- formatListAsSet(s)
+      counter <- counter + 1
+    }
+  }
     
-  }
-  #Iterate through the sourceSets. format list as Set and insert at the index.
-  counter <- 1
-  for (s in sourceSets){
-    sourceSets[counter] <- formatListAsSet(s)
-    counter <- counter + 1
-  }
   #format the the sourceSets as Question Strings
   # "A = {...}"
   # "B = {...}"
