@@ -449,7 +449,7 @@ getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1
     #generate and fill sets
     if (probability == 1) {
       if (chance == 1) {
-        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue, " or x > ", finalValue), collapse = " ")
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue, " \\vee x > ", finalValue), collapse = " ")
       }
       if (chance == 2) {
         sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue), collapse = " ")
@@ -465,8 +465,8 @@ getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1
       setTwoInitial <- getValue(x = dType, min = 1, max = 20, cat = 6)
       setTwoFinal <- getValue(x = dType, min = 20, max = 40, cat = 6)
       if (chance == 1) {
-        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue, " or x > ", finalValue), collapse = " ")
-        sourceSets[[2]] <- paste(c("x \\in ", memberType, " | x < ", setTwoInitial, " or x > ", setTwoFinal), collapse = " ")
+        sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue, " \\vee x > ", finalValue), collapse = " ")
+        sourceSets[[2]] <- paste(c("x \\in ", memberType, " | x < ", setTwoInitial, " \\vee x > ", setTwoFinal), collapse = " ")
       }
       if (chance == 2) {
         sourceSets[[1]] <- paste(c("x \\in ", memberType, " | x < ", initialValue), collapse = " ")
