@@ -175,6 +175,80 @@ getSets <- function(n = 2, m = 5, x = 1){
   return(sets)
 }
 
+#getSeqSets
+# getSeqSets generates 1 sequential set between a given range of from and to values.
+#
+# param   Sequence    Currently only one sequence available
+# param   from        Starting integer value
+# param   to          Ending integer value
+# param   membersType Member type of values. Currently only available for integers.
+#                     (1: Ints)
+#
+# returns          vector containing set
+
+getSeqSets <- function(Sequence = 1, from = sample(1:10, 1, replace = FALSE), to = sample(11:20, 1, replace = FALSE), membersType = 1) {
+  sets <- vector()
+  if (Sequence == 1) {
+    sets <- seq(from, to, by = 1)
+  }
+  return(sets)
+}
+
+
+#Set Notation Generation
+# getSetNotations generates 1 set from a starting border to an ending border. 
+# Allows user to specify whether starting and ending values are included
+#
+# param   leftIncl         Whether left border is included in set 
+# param   rightIncl        Whether right border is included in set
+# param   leftBorder       Minimum value of sequential set.
+# param   rightBorder      Maximum value of sequential set.
+# param   membersType      Currently only Ints and Real Numbers are supported.
+# param   notation         Three notations are available, 1 = Roster, 2 = SetBuilder, 3 = Interval
+#                 (1: Ints, 2: Real, 3: Complex, 
+#                  4: Char, 5: String, 6: Mixed)
+#
+# returns         list of sets
+
+getSetNotations <- function(leftIncl = TRUE, rightIncl = TRUE, leftBorder = sample(1:10, 1, replace = FALSE), rightBorder = sample(11:20, 1, replace = FALSE), membersType = 1, notation = 2) {
+  answerSet <- vector(mode = "list", 2)
+  leftIncl <- vector()
+  rightIncl <- vector()
+  if (membersType == 1) {
+    leftBorder4Generation <- ifelse(leftIncl == 1, leftBorder, leftBorder + 1)
+    rightBorder4Generation <- ifelse(rightIncl == 1, rightBorder, rightBorder - 1)
+    membersType <- "ℤ"
+  }
+  if (membersType == 2) {
+    leftBorder4Generation <- ifelse(leftIncl == 1, leftBorder, leftBorder + 0.1)
+    rightBorder4Generation <- ifelse(rightIncl == 1, rightBorder, rightBorder - 0.1)
+    membersType <- "ℝ"
+  }
+  resultSet <- getSeqSets(Sequence = 1, leftBorder4Generation, rightBorder4Generation, membersType)
+  
+  if (notation == 1) {
+    resultSetString <- resultSet
+    answerSet[[2]] <- resultSetString
+    answerSet[[2]] <- formatListAsSet(answerSet[[2]])
+  }
+  else if (notation == 2) {
+    resultSetString <- paste('x ∈', membersType, '|', leftBorder, ifelse(leftIncl == 1, '≤ x', '< x')  
+                             , ifelse(rightIncl == 1, '≤', '<'), rightBorder)
+    answerSet[[2]] <- resultSetString
+    answerSet[[2]] <- formatListAsSet(answerSet[[2]])
+  }
+  else {
+    resultSetString <- paste(ifelse(leftIncl == 1, '[', '(' ), leftBorder, ',', rightBorder, ifelse(rightIncl == 1, ']' , ')'))
+    answerSet[[2]] <- resultSetString
+  }
+  
+  answerSet[[1]] <- resultSet
+  return(answerSet)
+}
+  
+
+
+
 
 #Value Generation
 # getValue generates 1 value of type x.
