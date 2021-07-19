@@ -210,18 +210,36 @@ getSeqSets <- function(Sequence = 1, from = sample(1:10, 1, replace = FALSE), to
 #
 # returns         list of sets
 
-getSetNotations <- function(leftIncl = TRUE, rightIncl = TRUE, leftBorder = sample(1:10, 1, replace = FALSE), rightBorder = sample(11:20, 1, replace = FALSE), membersType = 1, notation = 2) {
-  answerSet <- vector(mode = "list", 2)
-  leftIncl <- vector()
-  rightIncl <- vector()
+getSetNotations <- function(leftIncl = FALSE, rightIncl = FALSE, leftBorder = sample(1:10, 1, replace = FALSE), rightBorder = sample(11:20, 1, replace = FALSE), membersType = 1, notation = 2, format = TRUE) {
+  answerSet <- vector(mode = "list", 1)
   if (membersType == 1) {
-    leftBorder4Generation <- ifelse(leftIncl == 1, leftBorder, leftBorder + 1)
-    rightBorder4Generation <- ifelse(rightIncl == 1, rightBorder, rightBorder - 1)
+    if (leftIncl) {
+      leftBorder4Generation <- leftBorder
+    }
+    else {
+      leftBorder4Generation <- leftBorder + 1
+    }
+    if (rightIncl) {
+      rightBorder4Generation <- rightBorder
+    }
+    else {
+      rightBorder4Generation <- rightBorder - 1
+    }
     membersType <- "ℤ"
   }
   if (membersType == 2) {
-    leftBorder4Generation <- ifelse(leftIncl == 1, leftBorder, leftBorder + 0.1)
-    rightBorder4Generation <- ifelse(rightIncl == 1, rightBorder, rightBorder - 0.1)
+    if (leftIncl) {
+      leftBorder4Generation <- leftBorder
+    }
+    else {
+      leftBorder4Generation <- leftBorder + 0.1
+    }
+    if (rightIncl) {
+      rightBorder4Generation <- rightBorder
+    }
+    else {
+      rightBorder4Generation <- rightBorder - 0.1
+    }
     membersType <- "ℝ"
   }
   resultSet <- getSeqSets(Sequence = 1, leftBorder4Generation, rightBorder4Generation, membersType)
@@ -229,25 +247,32 @@ getSetNotations <- function(leftIncl = TRUE, rightIncl = TRUE, leftBorder = samp
   if (notation == 1) {
     resultSetString <- resultSet
     answerSet[[2]] <- resultSetString
+    if (format == TRUE) {
     answerSet[[2]] <- formatListAsSet(answerSet[[2]])
+    }
+    else {
+      answerSet[[2]] <- formatPartitionAsSet(answerSet[[2]])
+    }
   }
   else if (notation == 2) {
-    resultSetString <- paste('x ∈', membersType, '|', leftBorder, ifelse(leftIncl == 1, '≤ x', '< x')  
-                             , ifelse(rightIncl == 1, '≤', '<'), rightBorder)
+    resultSetString <- paste('x ∈', membersType, '|', leftBorder, (if(leftIncl == TRUE) '≤ x' else '< x')  
+                             , (if(rightIncl == TRUE) '≤' else '<'), rightBorder)
     answerSet[[2]] <- resultSetString
-    answerSet[[2]] <- formatListAsSet(answerSet[[2]])
+    if (format == TRUE) {
+      answerSet[[2]] <- formatListAsSet(answerSet[[2]])
+    }
+    else {
+      answerSet[[2]] <- formatPartitionAsSet(answerSet[[2]])
+    }
   }
   else {
-    resultSetString <- paste(ifelse(leftIncl == 1, '[', '(' ), leftBorder, ',', rightBorder, ifelse(rightIncl == 1, ']' , ')'))
+    resultSetString <- paste((if(leftIncl == 1) '[' else '(' ), leftBorder, ',', rightBorder, (if(rightIncl == 1) ']' else ')'))
     answerSet[[2]] <- resultSetString
   }
   
   answerSet[[1]] <- resultSet
   return(answerSet)
 }
-  
-
-
 
 
 #Value Generation
