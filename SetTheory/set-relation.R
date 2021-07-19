@@ -1324,5 +1324,193 @@ cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1, difficulty = 1
       
       
     }
+  } else if(difficulty == 3) {
+    
+    #generate and fill sets.
+    sourceSets <- getSets(n = 3, m = 3, x = 1)
+    #assign each set to a variable. 
+    a <- sourceSets[[1]]
+    b <- sourceSets[[2]]
+    c <- sourceSets[[3]]
+    #randomly generates question asked
+    randomChoice <- sample(1:5, 1)
+    
+    #functions that get cartesian product of 3 sets 
+    cartesian3sets <- function(h, i, j) {
+      hxixj <- list()
+      k <- 1
+      for (t in h) {
+        for (y in i) {
+          for( u in j) {
+            hxixj[[k]] <- c(t,y,u)
+            k <- k + 1
+          }
+        }
+      }
+      return(hxixj)
+    }
+    
+    #functions that get cartesian product of 2 sets
+    cartesian2sets <- function(h, i) {
+      hxi <- list()
+      k <- 1
+      for (t in h) {
+        for (y in i) {
+          hxi[[k]] <- c(t,y)
+          k <- k + 1
+        }
+      }
+      return(hxi)
+    }
+    
+    if(randomChoice == 1){
+      questionType <- sample(1:2, 1)
+      
+      if(questionType == 1) {
+        questionText1 <-('Let A, B, and C be three sets. What is \\$A\\times (B\\cap C)\\$?')
+      } else {
+        questionText1 <-('Let A, B, and C be three sets. What is \\$(A\\times B) \\cap (A\\times C)\\$?')
+      }
+      
+      correct <- cartesian2sets(a, intersect(b,c))
+      correct <-formatListAsSet(correct)
+      
+      correct <- str_replace_all(correct, c("c" = ""))
+    } else if(randomChoice == 2) {
+      
+      questionType <- sample(1:2, 1)
+      
+      if(questionType == 1) {
+        questionText <-('Let A, B, and C be three sets. What is \\$A\\times (B\\cup C)\\$?')
+      } else {
+        questionText <-('Let A, B, and C be three sets. What is \\$(A\\times B) \\cup (A\\times C)\\$?')
+      }
+      
+      correct <- cartesian2sets(a, union(b,c))
+      correct <-formatListAsSet(correct)
+      
+      correct <- str_replace_all(correct, c("c" = ""))
+      
+    } else if(randomChoice == 3) {
+      
+      questionType <- sample(1:2, 1)
+      
+      if(questionType == 1) {
+        questionText <-('Let A, B, and C be three sets. What is \\$(A\\cap B) \\times C\\$?')
+      } else {
+        questionText <-('Let A, B, and C be three sets. What is \\$(A\\times C) \\cap (B\\times C)\\$?')
+      }
+      
+      correct <- cartesian2sets(intersect(a,b), c)
+      correct <-formatListAsSet(correct)
+      
+      correct <- str_replace_all(correct, c("c" = ""))
+      
+    } else if(randomChoice == 4) {
+      
+      questionType <- sample(1:2, 1)
+      
+      if(questionType == 1) {
+        questionText <-('Let A, B, and C be three sets. What is \\$(A\\cup B) \\times C\\$?')
+      } else {
+        questionText <-('Let A, B, and C be three sets. What is \\$(A\\times C) \\cup (B\\times C)\\$?')
+      }
+      
+      
+      
+      correct <- cartesian2sets(union(a,b), c)
+      correct <-formatListAsSet(correct)
+      
+      
+      correct <- str_replace_all(correct, c("c" = ""))
+      
+    } else if(randomChoice == 5) {
+      
+      questionText <-('Let A, B, and C be three sets. What is \\$A\\times B \\times C \\$?')
+      
+      correct <- cartesian3sets(a, b, c)
+      
+      temporarySet <- correct
+      temporarySet <- str_replace_all(temporarySet, c("list\\(" = "\\(\\"))
+      temporarySet <- str_replace_all(temporarySet, c("c" = ""))
+      temporarySet <- str_replace_all(temporarySet, c("\\)," = "],"))
+      temporarySet <- str_replace_all(temporarySet, c("\\)" = "]"))
+      temporarySet <- str_replace_all(temporarySet, c("\\[" = "\\("))
+      temporarySet <- str_replace_all(temporarySet, c("]," = "\\),"))
+      temporarySet <- str_replace_all(temporarySet, c("]" = "\\)"))
+      correct <- temporarySet
+      
+      correct <-formatListAsSet(correct)
+    }
+    
+    
+    #Create a vector that will hold distractors
+    #NOTE: we declare the list with vector() here so that 
+    # we can also declare a length. This prevents R from
+    # copying the list every time we add an element
+    distractors <- vector(mode="list", length = 3)
+    
+    
+    for(i in (1:3)){
+      
+      #generate and fill sets.
+      distractorSet <- getSets(n = 3, m = 2, x = 1)
+      #assign each set to a variable. 
+      x <- distractorSet[[1]]
+      y <- distractorSet[[2]]
+      z <- distractorSet[[3]]
+      
+      
+      currentDist <- cartesian3sets(x, y, z)
+      temporarySet <- currentDist
+      temporarySet <- str_replace_all(temporarySet, c("list\\(" = "\\(\\"))
+      temporarySet <- str_replace_all(temporarySet, c("c" = ""))
+      temporarySet <- str_replace_all(temporarySet, c("\\)," = "],"))
+      temporarySet <- str_replace_all(temporarySet, c("\\)" = "]"))
+      temporarySet <- str_replace_all(temporarySet, c("\\[" = "\\("))
+      temporarySet <- str_replace_all(temporarySet, c("]," = "\\),"))
+      temporarySet <- str_replace_all(temporarySet, c("]" = "\\)"))
+      currentDist <- temporarySet
+      
+      
+      currentDist <- formatListAsSet(currentDist)  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+      
+  
+      #Note the single brackets '[1]' here 
+      distractors[i] <- currentDist
+      
+    }
+    
+    #now we format the sourceSets for output. We waited to do this so we could use
+    # the sourceSets for distractor generation.
+    
+    #Iterate through the sourceSets. format list as Set and insert at the index.
+    #COpy a
+    
+    counter <- 1
+    for (s in sourceSets){
+      sourceSets[counter] <- formatListAsSet(s)
+      counter <- counter + 1
+    }
+    
+    
+    #format the the sourceSets as Question String.
+    # "A = {...}"
+    # "B = {...}"
+    # "C = {...}"
+    sourceSets <- insertSet3Strings(sourceSets)
+    
+    
+    
+    # now we concatenate the question contents together
+    questionContents <- c(questionText, sourceSets)
+    
+    #format answers and sources into json and return results 
+    toSend <- list(content= questionContents, correct= correct, distractors= distractors)
+    
+    #jsonToSend <- toJSON(toSend)
+    
+    
+    return(toSend)
   }
 }
