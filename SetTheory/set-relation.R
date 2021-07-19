@@ -684,17 +684,17 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
     leftBorder <- sample(2:10, 1, replace = FALSE)
     rightBorder <- sample(11:20, 1, replace = FALSE)
     SetOne <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
-                              rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE))
+                              rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
     SetTwo <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder + difference, 
-                              rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE))
+                              rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE) 
     sourceSets[[1]] <- SetOne[[2]]
     sourceSets[[2]] <- SetTwo[[2]]
     # Creates partitions containing the symmetric differences of both sets
     # and appends them to the correct list
     leftdifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
-                                      leftBorder + difference - 1, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                      leftBorder + difference - 1, membersType = 1, notation = 1, format = FALSE)
     rightdifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, rightBorder + 1, 
-                                       rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE),format = FALSE )
+                                       rightBorder + difference, membersType = 1, notation = 1,format = FALSE )
     correct <- list()
     correct <- append(correct, leftdifference[[2]])
     correct <- append(correct, rightdifference[[2]])
@@ -711,10 +711,10 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
       # Adds random sample numbers to the borders to make distractors incorrect.
       distractorleftDifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
                                                   leftBorder + difference + sample(1:5,1,replace = FALSE), 
-                                                  membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                                  membersType = 1, notation = 1, format = FALSE)
       distractorrightDifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, rightBorder, 
                                                    rightBorder + difference + sample(1:5,1,replace = FALSE), 
-                                                   membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                                   membersType = 1, notation = 1, format = FALSE)
       wrong <- currentDist[[1]]
       wrong <- append(wrong, distractorleftDifference[[2]])
       wrong <- append(wrong, distractorrightDifference[[2]])
@@ -795,13 +795,6 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
     correct <- c(correct, initial)
     correct <- c(correct, secondSet)
     correct <- formatListAsSet(correct)
-    
-    #Iterate through the sourceSets. format list as Set and insert at the index.
-    counter <- 1
-    for (s in sourceSets){
-      sourceSets[counter] <- formatListAsSet(s)
-      counter <- counter + 1
-    }
   }
   
   if (difficulty == 2) {
@@ -818,9 +811,9 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
     # Then append to the correct list and format.
     correct <- vector(mode = "list", length = 1)
     firstPartition <- getSetNotations(leftIncl = FALSE, rightIncl = TRUE, leftBorder, 
-                                      rightBorder - PartitionLength, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                      rightBorder - PartitionLength, membersType = 1, notation = 1, format = FALSE)
     secondPartition <- getSetNotations(leftIncl = TRUE, rightIncl = FALSE, rightBorder - PartitionLength + 1, 
-                                       rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                       rightBorder, membersType = 1, notation = 1, format = FALSE)
     correct[[1]] <- append(correct[[1]], firstPartition[[2]])
     correct[[1]] <- append(correct[[1]], secondPartition[[2]])
     correct[[1]] <- formatListAsSet(correct[[1]])
@@ -844,15 +837,21 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
      wrong <- c(wrong, firstSet)
      wrong <- c(wrong, secondSet)
      currentDist[[1]] <- wrong
+     #Iterate through the sourceSets. format list as Set and insert at the index.
+     counter <- 1
+     for (s in sourceSets){
+       sourceSets[counter] <- formatListAsSet(s)
+       counter <- counter + 1
+     }
    }
    if (difficulty == 2) {
      #generate distractor partitions and notations, and append to currentDist
      currentDist <- vector(mode = "list", length = 1)
      DistractorPartitionLength <- sample(2:9, 1, replace = FALSE)
      firstDistractorPartition <-getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
-                                                rightBorder - DistractorPartitionLength, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                                rightBorder - DistractorPartitionLength, membersType = 1, notation = 1, format = FALSE)
      secondDistractorPartition <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, rightBorder - DistractorPartitionLength + 1, 
-                                                  rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                                  rightBorder, membersType = 1, notation = 1, format = FALSE)
      currentDist[[1]] <- append(currentDist[[1]], firstDistractorPartition[[2]])
      currentDist[[1]] <- append(currentDist[[1]], secondDistractorPartition[[2]])
    }
