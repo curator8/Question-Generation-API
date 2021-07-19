@@ -46,6 +46,22 @@ insertSetQStrings <- function(sets) {
     return(nsets)
 }
 
+# insertSetQStrings takes a list of sets and appends strings to the list
+#  such that the final list is as follows:
+# 
+#  'Let \\; A=' [a set of numbers]
+#  'and \\; B=' [a set of numbers]
+#  'and \\; C=' [a set of numbers]
+#  'be \\; three \\; sets.'
+insertSet3Strings <- function(sets) {
+    nsets <- list()
+    #nsets[1] <- 'Let A and B be two sets. What is \\$A\\cup B\\$?'
+    nsets[1] <- paste('\\$A=\\$', sets[1])
+    nsets[2] <- paste('\\$B=\\$',sets[2])
+    nsets[3] <- paste('\\$C=\\$',sets[3])
+    return(nsets)
+}
+
 # insertSetRStrings takes a single set and appends strings to the set
 #  such that the final list is as follows:
 # 
