@@ -33,18 +33,68 @@ source("utils/set-generation.R") #set generation
 #                     answers.
 
 getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
+  
+  if (difficulty == 1) {
   #define the text of the question
   questionText <-('Let A and B be two sets. What is \\$A\\cup B\\$?')
-  
   #generate and fill sets
   sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   
   #creating the correct answer
   correct <- union(sourceSets[[1]], sourceSets[[2]])
-  if(difficulty > 1){
-    correct <- sample(correct, length(correct), replace = FALSE)
+  }
+  if(difficulty == 2){
+    chance <- sample(1:2, 1, replace = FALSE)
+    numSets = 3
+    sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+    if (chance == 1) {
+      #define the text of the question
+      questionText <-('Let A and B be two sets. What is A ∪ (B ∪ C)?')
+      first <- union(sourceSets[[2]], sourceSets[[3]])
+      correct <- union(first, sourceSets[[1]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+    if (chance == 2) {
+      #define the text of the question
+      questionText <-('Let A and B be two sets. What is (A ∪ B) ∪ C?')
+      first <- union(sourceSets[[1]], sourceSets[[2]])
+      correct <- union(first, sourceSets[[3]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
   }
   
+  
+  if (difficulty > 2) {
+    probability <- sample(1:2, 1, replace = FALSE)
+    sourceSets <- vector(mode = "list", length = 3)
+    Firstsource <- vector(mode = "list", length = 2)
+    Secondsource <- vector(mode = "list", length = 2)
+    Thirdsource <- vector(mode = "list", length = 2)
+    Firstsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(1:3, 1, replace = FALSE), 
+                                   rightBorder = sample(4:6, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE) 
+    Secondsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(7:9, 1, replace = FALSE), 
+                                    rightBorder = sample(10:13, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+    Thirdsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(14:16, 1, replace = FALSE), 
+                                    rightBorder = sample(17:20, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+    sourceSets[[1]] <- Firstsource[[2]]
+    sourceSets[[2]] <- Secondsource[[2]]
+    sourceSets[[3]] <- Thirdsource[[2]]
+    
+    if (probability == 1) {
+      #define the text of the question
+      questionText <-('Let A and B be two sets. What is A ∪ (B ∪ C)?')
+      first <- union(Secondsource[[1]], Thirdsource[[1]])
+      correct <- union(first, Firstsource[[1]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+    if (probability == 2) {
+      #define the text of the question
+      questionText <-('Let A and B be two sets. What is (A ∪ B) ∪ C?')
+      first <- union(Firstsource[[1]], Secondsource[[1]])
+      correct <- union(first, Thirdsource[[1]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+  }
   #Create the distractors
   distractors <- vector(mode="list", length = 3)
   
@@ -82,19 +132,24 @@ getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
   #formatting for output
   correct <- formatListAsSet(correct) #format for output
   
-  
+  if (difficulty < 3) {
   #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
   for (s in sourceSets){
     sourceSets[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
-  
+  }
+  if (difficulty == 1) {
   #format the the sourceSets as Question Strings
   # "A = {...}"
   # "B = {...}"
   sourceSets <- insertSetQStrings(sourceSets)
+  }
   
+  if (difficulty > 1) {
+    sourceSets <- insertSet3Strings(sourceSets)
+  }
   # now we concatenate the question contents together
   questionContents <- c(questionText, sourceSets)
   
@@ -319,7 +374,7 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
 getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1, difficulty =1) {
   
   questionText <- "Let A be a set and B be the universal set. What is the complement of set A?"
-  
+  if (difficulty < 3) {
   #generate and fill sets
   sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   sourceSets[[1]] <- sourceSets[[2]]
@@ -328,26 +383,39 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1, difficulty =
   length(sourceSets[[1]]) <- 5
   
   correct <- not(sourceSets[[2]], sourceSets[[1]])
-  d1 <- correct
-  d2 <- correct
 
   #shuffles when diff over 1
   if(difficulty > 1){
     correct <- sample(correct, length(correct), replace = FALSE)
   }
+  }
+  
+  if (difficulty > 2) {
+    sourceSets <- vector(mode = "list", length = 2)
+    Firstsource <- vector(mode = "list", length = 2)
+    Secondsource <- vector(mode = "list", length = 2)
+    Firstsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(5:10, 1, replace = FALSE), 
+                                   rightBorder = sample(11:15, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE) 
+    Secondsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(1:4, 1, replace = FALSE), 
+                                    rightBorder = sample(16:20, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+    sourceSets[[1]] <- Firstsource[[2]]
+    sourceSets[[2]] <- Secondsource[[2]]
+    correct <- not(Secondsource[[1]], Firstsource[[1]])
+  }
+  
+  d1 <- correct
+  d2 <- correct
   correct <- formatListAsSet(correct)
-  
-  
   
   distractors <- vector(mode="list", length = 3)
   
   #distractor 1 Is similar to the correct answer, but with one different value
-  d1 <- replace(d1, length(d1) - 2, getValue(x = dType, min = 21, max = 30)) 
+  d1 <- replace(d1, length(d1) - 2, getValue(x = dType, min = 1, max = 20)) 
   if(difficulty > 1){
     d1 <- sample(d1, replace= FALSE)
   }
   #distractor 2 is also similar to the correct answer, but with one replaced value
-  d2 <- replace(d2, length(d2), getValue(x = dType, min = 21, max = 30))
+  d2 <- replace(d2, length(d2), getValue(x = dType, min = 1, max = 20))
   if(difficulty > 1){
     d2 <- sample(d2, replace= FALSE)
   }
@@ -362,14 +430,14 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1, difficulty =
   distractors[[3]] <- formatListAsSet(d3)
   
   
-  
+  if (difficulty < 3) {
   #Iterate through the sourceSets. format list as Set and insert at the index.
   counter <- 1
   for (s in sourceSets){
     sourceSets[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
-  
+  }
   #format the the sourceSets as Question Strings
   # "A = {...}"
   # "B = {...}"
@@ -569,35 +637,94 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
     }
   }
   
-  #creating the correct answer based on length of SourceSet
-  correct <- lengths(sourceSet) 
-  
-  #Creating distractors based on correct answer.
-  distractors <- vector(mode="list", length = 3)
-  probability <- sample(1:2, 1, replace = FALSE)
-  
-  for(i in 1:3) {
+  if (difficulty > 2) {
+    probability <- sample(1:2, 1, replace = FALSE)
+    leftIncl <- sample(c(TRUE,FALSE), 1, replace = FALSE)
+    rightIncl <- sample(c(TRUE,FALSE), 1, replace = FALSE)
+    sourceSets <- vector(mode = "list", length = 2)
+    Firstsource <- vector(mode = "list", length = 2)
+    Secondsource <- vector(mode = "list", length = 2)
     if (probability == 1) {
-      distractors[[i]] <- lengths(sourceSet) - sample(1:2, 1, replace = FALSE)
+      questionText <-('Let A be a set and B be a set. What is the total cardinality of sets A and B?')
+      Firstsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(5:10, 1, replace = FALSE), 
+                                     rightBorder = sample(11:15, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE) 
+      Secondsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(1:4, 1, replace = FALSE), 
+                                      rightBorder = sample(16:20, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+      sourceSets[[1]] <- Firstsource[[2]]
+      sourceSets[[2]] <- Secondsource[[2]]
+      correct <- lengths(Firstsource[1]) + lengths(Secondsource[1])
     }
     if (probability == 2) {
-      distractors[[i]] <- lengths(sourceSet) + sample(1:2, 1, replace = FALSE)
+      questionText <-('Let A be a set and B be a set. Based on the relative cardinalities of A and B, what type of function is A → B?')
+      Firstsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(6:7, 1, replace = FALSE), 
+                                     rightBorder = sample(15:16, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE) 
+      Secondsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(6:7, 1, replace = FALSE), 
+                                      rightBorder = sample(15:16, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+      sourceSets[[1]] <- Firstsource[[2]]
+      sourceSets[[2]] <- Secondsource[[2]]
+      distractors <- vector(mode="list", length = 3)
+      if ((lengths(Firstsource[1])) == (lengths(Secondsource[1]))) {
+        correct <- "Bijection"
+        distractors[[1]] <- "Surjection"
+        distractors[[2]] <- "Injection"
+        distractors[[3]] <- "None of the Above"
+      }
+      else if ((lengths(Firstsource[1])) < (lengths(Secondsource[1]))) {
+        correct <- "Injection"
+        distractors[[1]] <- "Surjection"
+        distractors[[2]] <- "Bijection"
+        distractors[[3]] <- "None of the Above"
+      }
+      else {
+        correct <- "Surjection"
+        distractors[[1]] <- "Bijection"
+        distractors[[2]] <- "Injection"
+        distractors[[3]] <- "None of the Above"
+      }
     }
   }
   
-  #Iterate through the sourceSet. format list as Set and insert at the index.
-  counter <- 1
-  for (s in sourceSet){
-    sourceSet[counter] <- formatListAsSet(s)
-    counter <- counter + 1
+  if (difficulty < 3) {
+    #creating the correct answer based on length of SourceSet
+    correct <- lengths(sourceSet) 
   }
   
-  #format the the sourceSet as Question Strings
-  # "A = {...}"
-  sourceSets <- insertSetRStrings(sourceSet)
+  if (difficulty < 3 || probability == 1) {
+    #Creating distractors based on correct answer.
+    distractors <- vector(mode="list", length = 3)
+    probability <- sample(1:2, 1, replace = FALSE)
+    for(i in 1:3) {
+      if (probability == 1) {
+          distractors[[i]] <- correct - sample(1:3, 1, replace = FALSE)
+      }
+      if (probability == 2) {
+          distractors[[i]] <- correct + sample(1:3, 1, replace = FALSE)
+      }
+  }
+  }
+ 
+  #Iterate through the sourceSet. format list as Set and insert at the index.
+  if (difficulty < 3) {
+    counter <- 1
+    for (s in sourceSet){
+      sourceSet[counter] <- formatListAsSet(s)
+      counter <- counter + 1
+    }
+    #format the the sourceSet as Question Strings
+    # "A = {...}"
+    sourceSets <- insertSetRStrings(sourceSet)
+  }
+  
+  if (difficulty > 2) {
+    #format the the sourceSet as Question Strings
+    # "A = {...}"
+    # "B = {...}"
+    sourceSets <- insertSetQStrings(sourceSets)
+  }
   
   # now we concatenate the question contents together
-  questionContents <- c(questionText, sourceSet)
+  questionContents <- c(questionText, sourceSets)
+  
   
   #add all items to a list for return
   toSend <- list(content = questionContents, correct = correct, distractors = distractors)
@@ -837,12 +964,6 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
      wrong <- c(wrong, firstSet)
      wrong <- c(wrong, secondSet)
      currentDist[[1]] <- wrong
-     #Iterate through the sourceSets. format list as Set and insert at the index.
-     counter <- 1
-     for (s in sourceSets){
-       sourceSets[counter] <- formatListAsSet(s)
-       counter <- counter + 1
-     }
    }
    if (difficulty == 2) {
      #generate distractor partitions and notations, and append to currentDist
@@ -861,6 +982,14 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
     distractors[i] <- currentDist
   }
   
+  if (difficulty == 1) {
+    #Iterate through the sourceSets. format list as Set and insert at the index.
+    counter <- 1
+    for (s in sourceSets){
+      sourceSets[counter] <- formatListAsSet(s)
+      counter <- counter + 1
+    }
+  }
   #format the the sourceSet as Question Strings
   # "A = {...}"
   sourceSets <- insertSetRStrings(sourceSets)
