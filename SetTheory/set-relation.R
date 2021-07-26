@@ -1904,9 +1904,9 @@ cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1, difficulty = 1
     #generate and fill sets.
     sourceSets <- getSets(n = 3, m = 3, x = 1)
     #assign each set to a variable. 
-    a <- sourceSets[[1]]
-    b <- sourceSets[[2]]
-    c <- sourceSets[[3]]
+    a <- unlist(sourceSets[[1]])
+    b <- unlist(sourceSets[[2]])
+    c <- unlist(sourceSets[[3]])
     #randomly generates question asked
     randomChoice <- sample(1:5, 1)
     
@@ -1942,9 +1942,9 @@ cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1, difficulty = 1
       questionType <- sample(1:2, 1)
       
       if(questionType == 1) {
-        questionText1 <-('Let A, B, and C be three sets. What is \\$A\\times (B\\cap C)\\$?')
+        questionText <-('Let A, B, and C be three sets. What is \\$A\\times (B\\cap C)\\$?')
       } else {
-        questionText1 <-('Let A, B, and C be three sets. What is \\$(A\\times B) \\cap (A\\times C)\\$?')
+        questionText <-('Let A, B, and C be three sets. What is \\$(A\\times B) \\cap (A\\times C)\\$?')
       }
       
       correct <- cartesian2sets(a, intersect(b,c))
@@ -2031,9 +2031,9 @@ cartesianProduct <- function(numSets = 2, setSize = 3, dType = 1, difficulty = 1
       #generate and fill sets.
       distractorSet <- getSets(n = 3, m = 2, x = 1)
       #assign each set to a variable. 
-      x <- distractorSet[[1]]
-      y <- distractorSet[[2]]
-      z <- distractorSet[[3]]
+      x <- unlist(distractorSet[[1]])
+      y <- unlist(distractorSet[[2]])
+      z <- unlist(distractorSet[[3]])
       
       
       currentDist <- cartesian3sets(x, y, z)
