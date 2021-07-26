@@ -213,13 +213,13 @@ getSeqSets <- function(Sequence = 1, from = sample(1:10, 1, replace = FALSE), to
 getSetNotations <- function(leftIncl = FALSE, rightIncl = FALSE, leftBorder = sample(1:10, 1, replace = FALSE), rightBorder = sample(11:20, 1, replace = FALSE), membersType = 1, notation = 2, format = TRUE) {
   answerSet <- vector(mode = "list", 1)
   if (membersType == 1) {
-    if (leftIncl) {
+    if (leftIncl == TRUE) {
       leftBorder4Generation <- leftBorder
     }
     else {
       leftBorder4Generation <- leftBorder + 1
     }
-    if (rightIncl) {
+    if (rightIncl == TRUE) {
       rightBorder4Generation <- rightBorder
     }
     else {
@@ -228,13 +228,13 @@ getSetNotations <- function(leftIncl = FALSE, rightIncl = FALSE, leftBorder = sa
     membersType <- "ℤ"
   }
   if (membersType == 2) {
-    if (leftIncl) {
+    if (leftIncl == TRUE) {
       leftBorder4Generation <- leftBorder
     }
     else {
       leftBorder4Generation <- leftBorder + 0.1
     }
-    if (rightIncl) {
+    if (rightIncl == TRUE) {
       rightBorder4Generation <- rightBorder
     }
     else {
