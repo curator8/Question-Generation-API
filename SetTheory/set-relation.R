@@ -915,7 +915,9 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
                                        rightBorder + difference, membersType = 1, notation = 1,format = FALSE )
     correct <- list()
     correct <- append(correct, leftdifference[[1]])
+    if (difficulty < 3) {
     correct <- append(correct, rightdifference[[1]])
+    }
     if (difficulty > 2) {
       # Creates partitions containing the symmetric differences of both sets
       # and appends them to the correct list
