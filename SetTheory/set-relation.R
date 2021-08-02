@@ -49,14 +49,14 @@ getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
     sourceSets <- getSets(n = numSets, m = setSize, x = dType)
     if (chance == 1) {
       #define the text of the question
-      questionText <-('Let A and B be two sets. What is A ∪ (B ∪ C)?')
+      questionText <-('Let A, B, and C be three sets. What is A ∪ (B ∪ C)?')
       first <- union(sourceSets[[2]], sourceSets[[3]])
       correct <- union(first, sourceSets[[1]])
       correct <- sample(correct, length(correct), replace = FALSE)
     }
     if (chance == 2) {
       #define the text of the question
-      questionText <-('Let A and B be two sets. What is (A ∪ B) ∪ C?')
+      questionText <-('Let A, B, and C be three sets. What is (A ∪ B) ∪ C?')
       first <- union(sourceSets[[1]], sourceSets[[2]])
       correct <- union(first, sourceSets[[3]])
       correct <- sample(correct, length(correct), replace = FALSE)
@@ -82,14 +82,14 @@ getSetUnionMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
     
     if (probability == 1) {
       #define the text of the question
-      questionText <-('Let A and B be two sets. What is A ∪ (B ∪ C)?')
+      questionText <-('Let A, B, and C be three sets. What is A ∪ (B ∪ C)?')
       first <- union(Secondsource[[1]], Thirdsource[[1]])
       correct <- union(first, Firstsource[[1]])
       correct <- sample(correct, length(correct), replace = FALSE)
     }
     if (probability == 2) {
       #define the text of the question
-      questionText <-('Let A and B be two sets. What is (A ∪ B) ∪ C?')
+      questionText <-('Let A, B, and C be three sets. What is (A ∪ B) ∪ C?')
       first <- union(Firstsource[[1]], Secondsource[[1]])
       correct <- union(first, Thirdsource[[1]])
       correct <- sample(correct, length(correct), replace = FALSE)
@@ -276,63 +276,101 @@ getSetIntersectMC <- function(numSets=2, setSize=5, dType = 1, difficulty =1 ) {
 #                     answers.
 
 getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
-  
-  questionStr <- "Let A and B be two sets. What is A-B?"
+  if (difficulty == 1) {
+  questionStr <- "Let A and B be two sets. What is A - B?"
   
   #generate and fill sets
   sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   
   #creating the correct answer
   correct <- not(sourceSets[[1]], sourceSets[[2]])
-  if(difficulty > 1){
-    correct <- sample(correct, length(correct), replace = FALSE)
-  }
+  
   if(length(correct) > 0){
-    correct <- formatListAsSet(correct) #format for output
+    correct <- correct #format for output
   } else {
     correct <- "\\$\\emptyset\\$"
   }
-
+  }
+  if (difficulty == 2) {
+    chance <- sample(1:2, 1, replace = FALSE)
+    numSets = 3
+    sourceSets <- getSets(n = numSets, m = setSize, x = dType)
+    if (chance == 1) {
+      #define the text of the question
+      questionStr <-('Let A, B, and C be three sets. What is A - (B - C)?')
+      first <- not(sourceSets[[2]], sourceSets[[3]])
+      correct <- not(sourceSets[[1]], first)
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+    if (chance == 2) {
+      #define the text of the question
+      questionStr <-('Let A, B, and C be three sets. What is (A - B) - C?')
+      first <- not(sourceSets[[1]], sourceSets[[2]])
+      correct <- not(first, sourceSets[[3]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+  }
+  
+  if (difficulty == 3) {
+    probability <- sample(1:2, 1, replace = FALSE)
+    sourceSets <- vector(mode = "list", length = 3)
+    Firstsource <- vector(mode = "list", length = 2)
+    Secondsource <- vector(mode = "list", length = 2)
+    Thirdsource <- vector(mode = "list", length = 2)
+    Firstsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(1:3, 1, replace = FALSE), 
+                                   rightBorder = sample(5:6, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE) 
+    Secondsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(8:9, 1, replace = FALSE), 
+                                    rightBorder = sample(11:13, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+    Thirdsource <- getSetNotations(leftIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), rightIncl = sample(c(TRUE, FALSE), 1, replace = FALSE), leftBorder = sample(15:16, 1, replace = FALSE), 
+                                   rightBorder = sample(18:20, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
+    sourceSets[[1]] <- Firstsource[[2]]
+    sourceSets[[2]] <- Secondsource[[2]]
+    sourceSets[[3]] <- Thirdsource[[2]]
+    
+    if (probability == 1) {
+      #define the text of the question
+      questionStr <-('Let A, B, and C be three sets. What is A - (B - C)?')
+      first <- not(Secondsource[[1]], Thirdsource[[1]])
+      correct <- not(first, Firstsource[[1]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+    if (probability == 2) {
+      #define the text of the question
+      questionStr <-('Let A, B, and C be three sets. What is (A - B) - C?')
+      first <- not(Firstsource[[1]], Secondsource[[1]])
+      correct <- not(first, Thirdsource[[1]])
+      correct <- sample(correct, length(correct), replace = FALSE)
+    }
+  }
+  
   #Create the distractors
   distractors <- vector(mode="list", length = 3)
   
   #add distractors to the list. 
   for(i in (1:3)){
-    if(difficulty > 1){ #difficulty higher than 1 scrambles lists in output.
-      currentDist <- sample(correct, replace = FALSE)
-    }
+    # generate a set
     currentDist <- correct
     
-    if(i == 1){ #empty set or set intersect
-      if(currentDist == "\\$\\emptyset\\$"){
-        currentDist <- intersect(sourceSets[[1]], sourceSets[[2]])
-        currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
-        
-      } else {
-        currentDist <- "\\$\\emptyset\\$"
-      }
+    if(i == 1){ #alter answer by removing an element
+      currentDist <- list(currentDist[-(setSize-1)])
     }
-    else if(i ==2){ #add an element
-      currentDist <- not(sourceSets[[1]], sourceSets[[2]])
+    else if(i ==2){ #add an element to the correct answer
+      # the issue here is that the "incorrect" element needs to be believable and 
+      # also not possible to be in the source sets. 
       currentDist <- list(c(currentDist, getValue(x=dType)))
-      currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
-      
     }
-    else if(i == 3){ #remove an element
-      currentDist <- not(sourceSets[[1]], sourceSets[[2]])
-      if(length(currentDist > 1)){
-        currentDist <- list(currentDist[-1])
-      }else { #add an element
-        currentDist <- list(c(currentDist, getValue(x=dType)))
-      }
-      currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
+    else if(i == 3){ #remove another element
+      currentDist <- list(currentDist[-(setSize-2)])
     }
+    
+    
+    currentDist <- formatListAsSet(currentDist[[1]])  #The [[1]] is important here as it removes a layer of abstraction imposed by R
     
     #Note the single brackets '[1]' here 
     distractors[i] <- currentDist
   }
-  
-  
+  correct <- formatListAsSet(correct)
+  if (difficulty < 3) {
   #now we format the sourceSets for output. We waited to do this so we could use
   # the sourceSets for distractor generation.
   
@@ -342,12 +380,21 @@ getAsymDiffMC <- function(numSets=2, setSize=5, dType = 1, difficulty = 1) {
     sourceSets[counter] <- formatListAsSet(s)
     counter <- counter + 1
   }
+  }
   
+  if (difficulty == 1) {
   #format the the sourceSets as Question Strings
   # "A = {...}"
   # "B = {...}"
   sourceSets <- insertSetQStrings(sourceSets)
-  
+  }
+  else {
+  #format the the sourceSets as Question Strings
+  # "A = {...}"
+  # "B = {...}"
+  # "C = {...}"
+  sourceSets <- insertSet3Strings(sourceSets)
+  }
   # now we concatenate the question contents together
   questionContents <- c(questionStr, sourceSets)
   
@@ -427,16 +474,17 @@ getSetComplementMC <- function(numSets = 2, setSize = 9, dType = 1, difficulty =
   
   distractors[[1]] <- formatListAsSet(d1)
   distractors[[2]] <- formatListAsSet(d2)
-  distractors[[3]] <- formatListAsSet(d3)
-  
-  
   if (difficulty < 3) {
-  #Iterate through the sourceSets. format list as Set and insert at the index.
-  counter <- 1
-  for (s in sourceSets){
-    sourceSets[counter] <- formatListAsSet(s)
-    counter <- counter + 1
+    distractors[[3]] <- formatListAsSet(d3)
+    #Iterate through the sourceSets. format list as Set and insert at the index.
+    counter <- 1
+    for (s in sourceSets){
+      sourceSets[counter] <- formatListAsSet(s)
+      counter <- counter + 1
   }
+  }
+  if (difficulty == 3) {
+    distractors[[3]] <- d3
   }
   #format the the sourceSets as Question Strings
   # "A = {...}"
@@ -501,55 +549,98 @@ getSetEqualityMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1
     
   }
   
-  if (difficulty > 1) {
+  if (difficulty == 2) {
     
     # Changes to a different question from difficulty 1. Asks to find the equivalent set.
     questionText <- "Let A be a set. Which set is equivalent to set A?"
     numSets <- 1
-    leftBorder <- sample(2:10, 1, replace = FALSE)
-    rightBorder <- sample(11:20, 1, replace = FALSE)
+    leftBorder <- sample(2:5, 1, replace = FALSE)
+    rightBorder <- sample(7:10, 1, replace = FALSE)
     
     # Generates sourceSet with setNotations function, and alters notation of correct answer
     # so that it is always different than the notation of the sourceSet for a more challenging question.
     sourceSets <- vector(mode = "list", 2)
     answer <- vector(mode = "list", 2)
-    notation <- sample(1:3, 1, replace = FALSE)
+    notation <- sample(2:3, 1, replace = FALSE)
     sourceSets <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
                                   rightBorder, membersType = 1, notation)
     if (notation == 2) {
       answer <- getSetNotations(leftIncl = FALSE, rightIncl = FALSE, leftBorder - 1, 
-                                 rightBorder + 1, membersType = 1, notation = 3)
+                                 rightBorder + 1, membersType = 1, notation = 1)
       correct <- answer[[2]]
     }
     else if (notation == 3){
-      answer <- getSetNotations(leftIncl = FALSE, rightIncl = FALSE, leftBorder - 1, 
-                                rightBorder + 1, membersType = 1, notation = sample(1:2, 1, replace = FALSE))
+      answer <- getSetNotations(leftIncl = TRUE, rightIncl = FALSE, leftBorder, 
+                                rightBorder + 1, membersType = 1, notation = 1)
       correct <- answer[[2]]
     }
     else {
-      answer <- getSetNotations(leftIncl = FALSE, rightIncl = FALSE, leftBorder - 1, 
-                                 rightBorder + 1, membersType = 1, notation = sample(2:3, 1, replace = FALSE))
+      answer <- getSetNotations(leftIncl = FALSE, rightIncl = TRUE, leftBorder - 1, 
+                                 rightBorder, membersType = 1, notation = 1)
       correct <- answer[[2]]
     }
-    
+  }   
+    if (difficulty > 2) {
+      questionText <- "Let A be a set. Which set is not equivalent to set A?"
+      
+      numSets <- 1
+      leftBorder <- sample(2:5, 1, replace = FALSE)
+      rightBorder <- sample(7:10, 1, replace = FALSE)
+      leftIncl <- TRUE
+      rightIncl <- TRUE
+      # Generates sourceSet with setNotations function, and alters notation of correct answer
+      # so that it is always different than the notation of the sourceSet for a more challenging question.
+      sourceSets <- vector(mode = "list", 2)
+      answer <- vector(mode = "list", 2)
+      probability <- sample(1:3, 1, replace = FALSE)
+      
+      sourceSets <- getSetNotations(leftIncl, rightIncl, leftBorder, 
+                                    rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE))
+      if (probability == 2) {
+        answer <- getSetNotations(leftIncl, rightIncl, leftBorder - 1, 
+                                  rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE))
+        correct <- answer[[2]]
+      }
+      else if (probability == 3){
+        answer <- getSetNotations(leftIncl, rightIncl, leftBorder + 1, 
+                                  rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE))
+        correct <- answer[[2]]
+      }
+      else {
+        answer <- getSetNotations(leftIncl, rightIncl, leftBorder, 
+                                  rightBorder - 1, membersType = 1, notation = sample(1:3, 1, replace = FALSE))
+        correct <- answer[[2]]
+      }
+    }
+    if (difficulty > 1) {
     #Create the distractors
     distractors <- vector(mode="list", length = 3)
     
     for(i in (1:3)){
       # Generates distractors with different included or excluded borders to make them
       # different from the correct answer.
-      d1 <- getSetNotations(leftIncl = TRUE, rightIncl = FALSE, leftBorder, 
-                            rightBorder, membersType = 1, notation = 2)
-      d2 <- getSetNotations(leftIncl = TRUE, rightIncl = FALSE, leftBorder, 
-                            rightBorder, membersType = 1, notation = 3)
-      d3 <- getSetNotations(leftIncl = FALSE, rightIncl = TRUE, leftBorder, 
-                            rightBorder, membersType = 1, notation = 1)
+      if (difficulty == 2) {
+        d1 <- getSetNotations(leftIncl = TRUE, rightIncl = FALSE, leftBorder, 
+                              rightBorder, membersType = 1, notation = 1)
+        d2 <- getSetNotations(leftIncl = FALSE, rightIncl = FALSE, leftBorder, 
+                              rightBorder, membersType = 1, notation = 1)
+        d3 <- getSetNotations(leftIncl = FALSE, rightIncl = TRUE, leftBorder, 
+                              rightBorder, membersType = 1, notation = 1)
+      }
+      else if (difficulty > 2) {
+        d1 <- getSetNotations(leftIncl = TRUE, rightIncl = FALSE, leftBorder, 
+                              rightBorder + 1, membersType = 1, notation = 2)
+        d2 <- getSetNotations(leftIncl = FALSE, rightIncl = FALSE, leftBorder - 1, 
+                              rightBorder + 1, membersType = 1, notation = 3)
+        d3 <- getSetNotations(leftIncl = FALSE, rightIncl = TRUE, leftBorder - 1, 
+                              rightBorder, membersType = 1, notation = 1)
+      }
       distractors[[1]] <- d1[[2]]
       distractors[[2]] <- d2[[2]]
       distractors[[3]] <- d3[[2]]
     }
    
-  }
+    }
 
   if (difficulty == 1) {
     #format the the sourceSets as Question Strings
@@ -662,24 +753,21 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
                                       rightBorder = sample(15:16, 1, replace = FALSE), membersType = 1, notation = sample(2:3, 1, replace = FALSE), format = TRUE)
       sourceSets[[1]] <- Firstsource[[2]]
       sourceSets[[2]] <- Secondsource[[2]]
-      distractors <- vector(mode="list", length = 3)
+      distractors <- vector(mode="list", length = 2)
       if ((lengths(Firstsource[1])) == (lengths(Secondsource[1]))) {
         correct <- "Bijection"
         distractors[[1]] <- "Surjection"
         distractors[[2]] <- "Injection"
-        distractors[[3]] <- "None of the Above"
       }
       else if ((lengths(Firstsource[1])) < (lengths(Secondsource[1]))) {
         correct <- "Injection"
         distractors[[1]] <- "Surjection"
         distractors[[2]] <- "Bijection"
-        distractors[[3]] <- "None of the Above"
       }
       else {
         correct <- "Surjection"
         distractors[[1]] <- "Bijection"
         distractors[[2]] <- "Injection"
-        distractors[[3]] <- "None of the Above"
       }
     }
   }
@@ -749,7 +837,7 @@ getSetCardinalityMC <- function(numSets = 1, setSize = sample(1:9, 1, replace = 
 getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
   
   #define the text of the question
-  questionText <-('Let A and B be two unique sets. What is the symmetric difference of A and B?')
+  questionText <-('Let A and B be two sets. What is the symmetric difference of A and B?')
   
   if (difficulty == 1) {
     #generate and fill sets
@@ -773,22 +861,6 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
     correct <- not(sourceSets[[1]], sourceSets[[2]])
     correct <- append(correct, not(sourceSets[[2]], sourceSets[[1]]), after = length(correct))
   
-  
-    #Creating distractors based on correct answer.
-    distractors <- vector(mode="list", length = 3)
-  
-    for (i in (1:3)) {
-      currentDist <- list()
-      currentDist[[1]] <- correct
-      wrong <- currentDist[[1]]
-      wrong <- replace(wrong, length(wrong) - sample(0:1, 1, replace = FALSE), getValue(x = dType, min = 1, max = 30, cat = 6))
-      currentDist[[1]] <- wrong
-      currentDist <- formatListAsSet(currentDist[[1]])
-      distractors[i] <- currentDist
-    }
-  
-    correct <- formatListAsSet(correct)
-
     #Iterate through the sourceSets. format list as Set and insert at the index.
     counter <- 1
     for (s in sourceSets){
@@ -800,62 +872,89 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
   if (difficulty > 1) {
     #Creates two partitions within a larger set based on the differences between the
     # borders of the sourceSet.
-    sourceSets <- vector(mode = "list", 2)
-    SetOne <- list()
-    SetTwo <- list()
+    if (difficulty == 2) {
+      sourceSets <- vector(mode = "list", 2)
+      SetOne <- list()
+      SetTwo <- list()
+    }
+    if (difficulty > 2) {
+      #define the text of the question
+      questionText <-('Let A, B, and C be three sets. What is the symmetric difference of A, B, and C?')
+      sourceSets <- vector(mode = "list", 3)
+      SetOne <- list()
+      SetTwo <- list()
+      SetThree <- list()
+    }
+    leftIncl <- TRUE
+    rightIncl <- TRUE
     # Difference variable defines the random difference in both borders between the 1st and 2nd
     # sourceSets so there will always be a symmetric difference.
-    difference <- sample(2:10,1, replace = FALSE)
+    difference <- sample(1:2, 1, replace = FALSE)
     leftdifference <- list()
     rightdifference <- list()
-    leftBorder <- sample(2:10, 1, replace = FALSE)
-    rightBorder <- sample(11:20, 1, replace = FALSE)
-    SetOne <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
+    leftBorder <- sample(7:8, 1, replace = FALSE)
+    rightBorder <- sample(9:10, 1, replace = FALSE)
+    SetOne <- getSetNotations(leftIncl, rightIncl, leftBorder, 
                               rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
-    SetTwo <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder + difference, 
-                              rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE) 
+    SetTwo <- getSetNotations(leftIncl, rightIncl, leftBorder + difference, 
+                              rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+    if (difficulty > 2) {
+      SetThree <- getSetNotations(leftIncl, rightIncl, leftBorder + (difference * 2), 
+                                            rightBorder + (difference * 2), membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+    }
     sourceSets[[1]] <- SetOne[[2]]
     sourceSets[[2]] <- SetTwo[[2]]
+    if (difficulty > 2) {
+      sourceSets[[3]] <- SetThree[[2]]
+    }
     # Creates partitions containing the symmetric differences of both sets
     # and appends them to the correct list
-    leftdifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
+    leftdifference <- getSetNotations(leftIncl, rightIncl, leftBorder, 
                                       leftBorder + difference - 1, membersType = 1, notation = 1, format = FALSE)
-    rightdifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, rightBorder + 1, 
+    rightdifference <- getSetNotations(leftIncl, rightIncl, rightBorder + 1, 
                                        rightBorder + difference, membersType = 1, notation = 1,format = FALSE )
     correct <- list()
-    correct <- append(correct, leftdifference[[2]])
-    correct <- append(correct, rightdifference[[2]])
-    correct <- formatListAsSet(correct)
-    
+    correct <- append(correct, leftdifference[[1]])
+    if (difficulty < 3) {
+    correct <- append(correct, rightdifference[[1]])
+    }
+    if (difficulty > 2) {
+      # Creates partitions containing the symmetric differences of both sets
+      # and appends them to the correct list
+      rightdifferencetwo <- list()
+      rightdifferencetwo <- getSetNotations(leftIncl, rightIncl, rightBorder + difference + 1, 
+                                      rightBorder + difference + difference, membersType = 1, notation = 1, format = FALSE)
+      correct <- append(correct, rightdifferencetwo[[1]])
+    }
+  }
     #Creating distractors based on correct answer.
     distractors <- vector(mode="list", length = 3)
     
     for (i in (1:3)) {
-      # Create distractor partitions based on correct symmetric difference. 
-      currentDist <- vector(mode="list", length = 1)
-      distractorleftDifference <- list()
-      distractorrightDifference <- list()
-      # Adds random sample numbers to the borders to make distractors incorrect.
-      distractorleftDifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
-                                                  leftBorder + difference + sample(1:5,1,replace = FALSE), 
-                                                  membersType = 1, notation = 1, format = FALSE)
-      distractorrightDifference <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, rightBorder, 
-                                                   rightBorder + difference + sample(1:5,1,replace = FALSE), 
-                                                   membersType = 1, notation = 1, format = FALSE)
+      currentDist <- list()
+      currentDist[[1]] <- correct
       wrong <- currentDist[[1]]
-      wrong <- append(wrong, distractorleftDifference[[2]])
-      wrong <- append(wrong, distractorrightDifference[[2]])
+      wrong <- replace(wrong, length(wrong) - sample(0:1, 1, replace = FALSE), getValue(x = dType, min = 1, max = 30, cat = 6))
       currentDist[[1]] <- wrong
       currentDist <- formatListAsSet(currentDist[[1]])
       distractors[i] <- currentDist
     }
-  }
+    
+    correct <- formatListAsSet(correct)
   
-  #format the the sourceSet as Question Strings
-  # "A = {...}"
-  # "B = {...}"
-  sourceSets <- insertSetQStrings(sourceSets)
-
+  if (difficulty < 3) {
+    #format the the sourceSet as Question Strings
+    # "A = {...}"
+    # "B = {...}"
+    sourceSets <- insertSetQStrings(sourceSets)
+  }
+  else {
+    #format the the sourceSet as Question Strings
+    # "A = {...}"
+    # "B = {...}"
+    # "C = {...}"
+    sourceSets <- insertSet3Strings(sourceSets)
+  }
   # now we concatenate the question contents together
   questionContents <- c(questionText, sourceSets)
 
@@ -881,10 +980,16 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
 
 getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty = 1) {
   
-  #define the text of the question
-  questionText <-('Let A be a set. Which answer represents an incorrect set partition of set A?')
-  
   if (difficulty == 1) {
+    #define the text of the question
+    questionText <-('Let A be a set. Which answer represents a correct set partition of set A?')
+  }
+  if (difficulty > 1) {
+    #define the text of the question
+    questionText <-('Let A be a set. Which answer represents an incorrect set partition of set A?')
+  }
+
+  if (difficulty < 3) {
     #generate and fill sets
     sourceSets <- getSets(n = numSets, m = setSize, x = dType)
   
@@ -910,10 +1015,12 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
     # Then creates the second partition with the remaining members from the source.
     secondSet <- not(sourceSets[[1]], initial)
   
+    if (difficulty == 2) {
     # Replaces one member of the first partition with a random member, thus making
     # the partitioning incorrect and generating the correct answer choice.
     initial <- replace(initial, length(initial) - sample(0:2, 1, replace = FALSE),
     getValue(x = dType, min = 1, max = 20))
+    }
   
     # Formats each inner partition as a set and concatenates each set
     # within the larger list. Then formats the larger list as a set.
@@ -924,12 +1031,12 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
     correct <- formatListAsSet(correct)
   }
   
-  if (difficulty == 2) {
+  if (difficulty > 2) {
     # Define sourceSets and generate set with setNotations function.
     sourceSets <- vector(mode="list", length = 1)
     originalSet <- vector(mode="list", length = 2)
-    leftBorder <- sample(1:10, 1, replace = FALSE)
-    rightBorder <- sample(11:20, 1, replace = FALSE)
+    leftBorder <- sample(10:11, 1, replace = FALSE)
+    rightBorder <- sample(19:20, 1, replace = FALSE)
     PartitionLength <- sample(2:5, 1, replace = FALSE)
     originalSet <- getSetNotations(leftIncl = TRUE, rightIncl = TRUE, leftBorder, 
                                    rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = TRUE)
@@ -950,12 +1057,16 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
   
   
   for(i in (1:3)) {
-   if (difficulty == 1) {
+   if (difficulty < 3) {
      #generate and partition distractor sets
      currentDist <- (getSets(n = 1, m = 5, x = dType))
      firstSet <- sample(sourceSets[[1]], length(sourceSets[[1]]), replace  = FALSE)
      length(firstSet) <- sample(2:4, 1, replace = FALSE)
      secondSet <- not(sourceSets[[1]], firstSet)
+     if (difficulty == 1) {
+     firstSet <- replace(firstSet, length(firstSet) - sample(0:2, 1, replace = FALSE),
+                        getValue(x = dType, min = 1, max = 20))
+     }
      firstSet <- formatPartitionAsSet(firstSet)
      secondSet <- formatPartitionAsSet(secondSet)
      wrong <- list()
@@ -965,7 +1076,7 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
      wrong <- c(wrong, secondSet)
      currentDist[[1]] <- wrong
    }
-   if (difficulty == 2) {
+   if (difficulty > 2) {
      #generate distractor partitions and notations, and append to currentDist
      currentDist <- vector(mode = "list", length = 1)
      DistractorPartitionLength <- sample(2:9, 1, replace = FALSE)
@@ -982,7 +1093,7 @@ getSetPartitionsMC <- function(numSets = 1, setSize = 5, dType = 1, difficulty =
     distractors[i] <- currentDist
   }
   
-  if (difficulty == 1) {
+  if (difficulty < 3) {
     #Iterate through the sourceSets. format list as Set and insert at the index.
     counter <- 1
     for (s in sourceSets){
