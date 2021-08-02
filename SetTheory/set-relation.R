@@ -895,12 +895,12 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
     leftBorder <- sample(7:8, 1, replace = FALSE)
     rightBorder <- sample(9:10, 1, replace = FALSE)
     SetOne <- getSetNotations(leftIncl, rightIncl, leftBorder, 
-                              rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                              rightBorder, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = TRUE)
     SetTwo <- getSetNotations(leftIncl, rightIncl, leftBorder + difference, 
-                              rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                              rightBorder + difference, membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = TRUE)
     if (difficulty > 2) {
       SetThree <- getSetNotations(leftIncl, rightIncl, leftBorder + (difference * 2), 
-                                            rightBorder + (difference * 2), membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = FALSE)
+                                            rightBorder + (difference * 2), membersType = 1, notation = sample(1:3, 1, replace = FALSE), format = TRUE)
     }
     sourceSets[[1]] <- SetOne[[2]]
     sourceSets[[2]] <- SetTwo[[2]]
@@ -940,8 +940,9 @@ getSymmDiffMC <- function(numSets = 2, setSize = 5, dType = 1, difficulty = 1){
       distractors[i] <- currentDist
     }
     
-    correct <- formatListAsSet(correct)
-  
+   
+  correct <- formatListAsSet(correct)
+    
   if (difficulty < 3) {
     #format the the sourceSet as Question Strings
     # "A = {...}"
