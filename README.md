@@ -3,7 +3,7 @@ Set Operations API
 
 <h2>API functionallity</h2>
 
-Currently implemented API functions are found within the `set-relation.R` file. Other files are for testing or documentation purposes and should not be used as an API. The following are the currently implemented endpoints:
+Currently implemented API logic is found within the `set-relation.R` file within the setTheory folder.
   <ul>
   <li>/getSetUnion</li>
   <li>/getSetIntersect</li>
